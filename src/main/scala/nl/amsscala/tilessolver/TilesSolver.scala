@@ -1,4 +1,7 @@
-object tilessolver {
+package nl.amsscala
+package nl.amsscala.tilessolver
+
+object TilesSolver {
 
   object Direction extends Enumeration {
     case class Direction extends Val {
