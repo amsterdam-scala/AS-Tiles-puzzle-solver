@@ -32,73 +32,63 @@ object TilesSolver extends App {
    */
   case class Tile(val start: Direction, val end: Direction)
 
-  type Path = Vector[Tile]
-
-  implicit class PathWrapper(path: Path) {
-    def isPrependable(tile: Tile): Boolean =
-      if (path.isEmpty) tile.end == C else path.head.start isJoinable tile.end
-  }
-
-  @tailrec
-  def solution(itemToTest: Int, available: Vector[Tile], path: Path): Path = {
-    if (itemToTest < 0) path
-    else {
-      if (path.head.start isJoinable available(itemToTest).end)
-        solution(available.size - 2, available diff Vector(available(itemToTest)), available(itemToTest) +: path)
-      else solution(itemToTest - 1, available, path)
-    }
-  }
+  type Path = List[Tile]
 
   val l = List(Tile(C, E), Tile(W, C))
 
-  val l2 = Vector(
+  val l2 = List(
     Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(W, S),
     Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C))
 
-  val l3 = Vector(
+  val l3 = List(
     Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(E, S),
     Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C))
 
-  @tailrec
-  def solver(startItems: Vector[Tile], index: Int, accu: List[Path]): List[Path] = {
-    if (index < 0) accu
-    else solver(startItems, index - 1, accu :+ solution(startItems.size - 1, startItems, Vector(startItems(index))))
-  }
-
-  def walk(trail: Vector[Tile],
-           combinator: Vector[Tile],
-           source: Vector[Tile],
-           onHand: Vector[Tile],
-           explored: Path,
-           accu: Vector[Path]): Vector[Path] = {
-    //println("Trail " + trail + " comb " + combinator + " expl " + explored + " accu " + accu)
-    if (trail.isEmpty) explored +: accu
+  /** @param	trail	Comparative objects A
+   *  @param	combinator	comparative objects B
+   *  @param	source	Available tiles to combine with
+   *  @param	onHand	Actual tiles left over
+   *  @param	explored	Actual combination
+   *  @param	accu	List of paths discovered
+   */
+  def walk(
+    trail: List[Tile],
+    combinator: List[Tile],
+    source: List[Tile],
+    onHand: List[Tile],
+    explored: Path,
+    accu: List[Path]): List[Path] = {
+    if (trail.isEmpty) (explored +: accu)//.distinct // distinct is necessary, don't know why
     else if (combinator.isEmpty) { // Try a new walk 
       walk(trail.tail,
-        source.distinct,
+        source,
         source,
         onHand = source,
-        Vector.empty,
+        Nil,
         if (explored.isEmpty) accu else explored +: accu)
     } else
-      walk(trail, combinator.tail, source, onHand, explored, accu ++
+      walk(trail, combinator.tail, source, onHand, explored,
         (if (trail.head.start isJoinable combinator.head.end) {
-          walk(trail = Vector(combinator.head), // explore further with new found tile
-            combinator = onHand.tail, // diff Vector(combinator.head), // and continue with remaining tiles
+          walk(
+            trail = List(combinator.head), // explore further with new found tile
+            // Invoke a found sequence by empty list
+            combinator = if (combinator.head.start == C) Nil else onHand diff List(combinator.head),
             source = source,
-            onHand = onHand.tail,// diff Vector(combinator.head), // explore further without used tile
-            explored = if (explored.isEmpty) Vector(trail.head) else trail.head +: explored,
+            onHand = onHand diff Vector(combinator.head), // explore further without used tile
+            explored = (if (combinator.head.start == C) List(combinator.head, trail.head)
+            else List(trail.head)) ++ explored,
             accu = accu)
-        } else Vector.empty))
+        } else List.empty) ++ accu).distinct
   }
 
-  def solve(tiles: Vector[Tile]) = {
-    walk(tiles.filter(_.end == C).distinct, // Start with ending tiles, one of each
-      (tiles.filter(_.end != C)), // Other tile to compare with, one of each
-      (tiles.filter(p =>(p.end != C) ||( p.start != C))), // available tile to compose with
-      (tiles.filter(p =>(p.end != C) ||( p.start != C))), // Nearly all tiles to start over
-      Vector.empty, // intermediate result
-      Vector.empty)
+  def solve(tiles: List[Tile]) = {
+    val tilesNotEndingInTheMiddle = tiles.filter(_.end != C)
+    walk(trail = tiles.filter(_.end == C).distinct, // Start with ending tiles, one of each
+      combinator = tilesNotEndingInTheMiddle.distinct, // Other tile to compare with, one of each
+      source = tilesNotEndingInTheMiddle, // available tiles to compose with
+      onHand = tilesNotEndingInTheMiddle, // Nearly all tiles to start over
+      explored = Nil, // intermediate result
+      accu = Nil)
   }
 
   println(solve(l2).distinct.mkString("\n")) // Accumulated results
