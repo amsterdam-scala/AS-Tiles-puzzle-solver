@@ -86,8 +86,7 @@ object TilesSolver extends App {
       accu = Nil)
   } // def solve(
 
-  val result = solve(l2)
+  val result = solve(l2) // Accumulated results
 
-  println("Diff " + (result diff result.distinct))
-  println(result.mkString("\n")) // Accumulated results
+  println(result.mkString("\n"))
 }
