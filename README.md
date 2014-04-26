@@ -13,11 +13,11 @@ This program solves the puzzle described by the image below.
 
 ## Tiles
 
-On a tile there is a directed path which can described as an incoming or start-side and an outgoing or end-size. Each has two of this side which are named to the cardinal directions. The four directions are denoted with *N, E, S, W* with the shorthand of the four cardinal directions. If a tile is a beginning (no incoming connection) or an ending (no outgoing connection) then it is denoted with *C* (for beginning respevtively ending in the center aka middle).
+On a tile there is a directed path which can described as an incoming or start-side and an outgoing or end-size. Each has two of this side which are named to the cardinal directions. The four directions are denoted with *N, E, S, W* with the shorthand of the four cardinal directions. If a tile is a beginning (no incoming connection) or an ending (no outgoing connection) then it is denoted with *C* (for beginning respectively ending in the center aka middle).
 
 ## Tile Relationships
 
-We define the matching function between the ends of two tiles with the ```isJoinable``` test function (in Scala it could also be seen as an operator). An outgoing ending can be connected with the counter direction of the ingoing ending of the other tile. E.g. *N* with *S*, *W* with *E* and theoretical vice-versa. The *C* "ending" cannot be connected with any other tile. The ending side is taken in account with the start, so ending side *N* matches with *S* and so on.
+We define the matching function between the ends of two tiles with the ```isJoinable``` test function (in Scala it could also be seen as an operator). An outgoing ending can be connected with the counter direction of the incoming ending of the other tile. E.g. *N* with *S*, *W* with *E* and theoretical vice-versa. The *C* "ending" cannot be connected with any other tile. The ending side is taken in account with the start, so ending side *N* matches with *S* and so on.
 
 # The Solver
 
