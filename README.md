@@ -32,4 +32,8 @@ A solution is generated and appended to the list of returning paths if the selec
 - we used high order *combinators* (```filter()```, ```distinct```, etc.) to implement the solver's algorithm
 - removing one element in List is easily made with the diff List(elem),
 
-You are welcome to give your suggestions on this site.
+## Contributing / Issues
+
+Please post any issues or ideas you have to [Tiles puzzle solver's issues](https://github.com/amsterdam-scala/AS-Tiles-puzzle-solver/issues)
+
+If you like rolling up your sleeves, feel free to fork and create a feature branch
