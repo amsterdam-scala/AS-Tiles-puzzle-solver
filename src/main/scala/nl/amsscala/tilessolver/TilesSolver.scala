@@ -47,7 +47,7 @@ object TilesSolver extends App {
   /** Returns a list of possible paths starting
    *  and ending with a start and ending tile.
    */
-  def findPaths(tiles: TilesToUse): List[Path] = {
+  def findPaths(tiles: TilesToUse): Set[Path] = {
     /** Available tiles to combine with. */
     val tilesNotEndingInTheMiddle = tiles.filter(_.end != C)
 
@@ -55,17 +55,17 @@ object TilesSolver extends App {
              candidates: TilesToUse, //comparative objects B
              onHand: TilesToUse, //Actual unused tiles
              explored: Path, //Actual promising combinations in progress
-             maintainedPath: List[Path] //List of paths already discovered
-             ): List[Path] = {
-      if (trail.isEmpty) (explored +: maintainedPath).distinct // distinct is necessary, don't know why
+             maintainedPath: Set[Path] //List of paths already discovered
+             ): Set[Path] = {
+      if (trail.isEmpty) maintainedPath + explored // distinct of a set is necessary, don't know why
       else if (candidates.isEmpty) { // Try a new walk 
         walk(trail.tail,
           tilesNotEndingInTheMiddle,
           onHand = tilesNotEndingInTheMiddle,
           Nil,
-          if (explored.isEmpty || (explored.head.start != C)) maintainedPath else explored +: maintainedPath)
+          if (explored.isEmpty || (explored.head.start != C)) maintainedPath else maintainedPath + explored)
       } else // Do a matching with each other tile
-        walk(trail, candidates.tail, onHand, explored,
+        walk(trail, candidates.tail, onHand, explored, maintainedPath ++
           (if (trail.head.start isJoinable candidates.head.end) { // if jointable
             walk(
               trail = List(candidates.head), // explore further with new found tile
@@ -76,14 +76,14 @@ object TilesSolver extends App {
                 (if (candidates.head.start == C) List(candidates.head, trail.head)
                 else List(trail.head)) ++ explored,
               maintainedPath = maintainedPath)
-          } else Nil) ++ maintainedPath)
+          } else Nil))
     } // def walk(
 
     walk(trail = tiles.filter(_.end == C).distinct, // Start with ending tiles, one of each
       candidates = tilesNotEndingInTheMiddle.distinct, // Other tiles to compare with, one of each
       onHand = tilesNotEndingInTheMiddle, // Nearly all tiles to start over
       explored = Nil, // intermediate result
-      maintainedPath = Nil)
+      maintainedPath = Set.empty)
   } // def solve(
 
   val result = findPaths(l) // Accumulated results

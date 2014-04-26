@@ -2,7 +2,9 @@
 *.log
 
 # sbt specific
-.cache/
+.project
+.cache
+.classpath
 .history/
 .lib/
 dist/*
