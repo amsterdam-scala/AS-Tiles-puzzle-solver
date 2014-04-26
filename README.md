@@ -5,13 +5,6 @@ This program solves the puzzle described by the image below.
 
 
 # The Puzzle Rules
-Scala Tiles Puzzle Solver
-=========================
-
-This program solves the puzzle described by the image below.
-
-
-# The Puzzle Rules
 
 ![puzzle](http://famsterdamworld.com/ticofab/puzzle.jpg)
 
@@ -75,4 +68,4 @@ A solution is generated and appended to the list of returning paths if the selec
 
 Please post any issues or ideas you have to [Tiles puzzle solver's issues](https://github.com/amsterdam-scala/AS-Tiles-puzzle-solver/issues)
 
-If you like rolling up your sleeves, feel free to fork and create a feature branch
+If you like rolling up your sleeves, feel free to fork and create a feature branch.
