@@ -27,10 +27,18 @@ The solver filters those tiles in the input list which are prependable to the cu
 
 A solution is generated and appended to the list of returning paths if the selected tile is a beginning tile.
 
+# Example
+The given 10 tiles which are depicted on the photo can be noted as:
+```Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(W, S), Tile(C, E), Tile(S, W),
+Tile(N, E), Tile(N, S), Tile(W, C)```
+
+```List(Tile(C,E), Tile(W,S), Tile(N,S), Tile(N,E), Tile(W,E), Tile(W,C))
+List(Tile(C,E), Tile(W,E), Tile(W,S), Tile(N,S), Tile(N,E), Tile(W,C))```
+
 # Tricks
 - the algorithm start with one of the ending tiles, this is done for the nature of List prepending is computational cheaper than appending.
 - we used high order *combinators* (```filter()```, ```distinct```, etc.) to implement the solver's algorithm
-- removing one element in List is easily made with the diff List(elem),
+- removing one element in List is easily made with the diff List(elem)
 
 ## Contributing / Issues
 

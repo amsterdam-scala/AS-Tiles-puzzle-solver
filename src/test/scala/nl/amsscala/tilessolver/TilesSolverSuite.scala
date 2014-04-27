@@ -1,8 +1,8 @@
 package nl.amsscala
 package tilessolver
 
-import org.scalatest.GivenWhenThen
-import org.scalatest.FunSpec
+import org.scalatest
+import org.scalatest.{ FunSpec, GivenWhenThen }
 
 //import org.scalatest
 
@@ -37,6 +37,8 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
       Tile(C, E), Tile(N, E), Tile(N, S), Tile(W, C), Tile(N, C), Tile(W, E), Tile(W, S)))
 
   describe("A solution of the Tile problem") {
+
+    it ("should reject an invalid tile definition") (pending)
     it("should result in an list of an empty path") {
       given("an empty list")
       expectResult(Set(Nil)) { TilesSolver.findPaths(cases(0)) }
@@ -65,7 +67,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
       given("three mirrored centered tiles")
       expectResult(Set(Nil))(TilesSolver.findPaths(cases(8)))
     }
-    
+
     it("given two correct centered tiles should result in a list of paths") {
       assert(TilesSolver.findPaths(cases(9)) === Set(List(), List(Tile(C, S), Tile(N, C))))
     }
@@ -121,9 +123,9 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
           List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, C))))
     }
 
-    info("The following tests are permutations so are processing intensive.")
+    info("The following tests are permutations so are processor intensive.")
 
-    it("given the modified example of the site all permutations (1814400) the same lists of paths") {
+    it("given the modified example of the site all permutations (1.814.400) the same lists of paths") {
       cases(17).permutations.foreach(casus => assert(
         TilesSolver.findPaths(casus) ===
           Set(List(),
