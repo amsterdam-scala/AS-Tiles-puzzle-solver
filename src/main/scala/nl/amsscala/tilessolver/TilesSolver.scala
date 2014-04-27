@@ -86,7 +86,8 @@ object TilesSolver extends App {
       maintainedPath = Set.empty)
   } // def solve(
 
-  val result = findPaths(l) // Accumulated results
+  val result = findPaths(List( // Accumulated results
+    Tile(C, E), Tile(N, E), Tile(N, S), Tile(W, C), Tile(N, C), Tile(W, E), Tile(W, S)))
 
   println(result.mkString("\n"))
 }
