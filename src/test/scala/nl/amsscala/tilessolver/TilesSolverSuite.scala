@@ -3,8 +3,7 @@ package tilessolver
 
 import org.scalatest
 import org.scalatest.{ FunSpec, GivenWhenThen }
-
-//import org.scalatest
+import scala.collection.parallel.immutable.ParSeq
 
 /** @author A'dam Scala Tiles-puzzle-solver team */
 
@@ -12,7 +11,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
   import TilesSolver._
   import Direction._
 
-  val cases = Seq(Nil,
+  val cases = ParSeq(Nil,
     List(Tile(W, C)),
     List(Tile(C, W)),
     List(Tile(W, E)),
@@ -29,7 +28,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
     List(Tile(N, C), Tile(N, C), Tile(C, S), Tile(C, S)),
     List(Tile(C, S), Tile(N, C), Tile(N, C), Tile(C, S)),
     List(Tile(C, S), Tile(W, C), Tile(N, C), Tile(C, E)),
-    List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(E, S),
+    List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(E, S), // Modified example
       Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C)),
     List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(W, S),
       Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C)),
@@ -38,8 +37,14 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
 
   describe("A solution of the Tile problem") {
 
-    it ("should reject an invalid tile definition") (pending)
-    it("should result in an list of an empty path") {
+    it("should reject an invalid tile definition") {
+      val thrown = intercept[Exception] {
+        Tile(C, C)
+      }
+      assert(thrown.getMessage === "requirement failed: Not a proper tile definition, given C, C are the same.")
+    }
+    
+    it("should result in a set with one empty path") {
       given("an empty list")
       expectResult(Set(Nil)) { TilesSolver.findPaths(cases(0)) }
 
@@ -125,7 +130,8 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
 
     info("The following tests are permutations so are processor intensive.")
 
-    it("given the modified example of the site all permutations (1.814.400) the same lists of paths") {
+    it("should every time the same lists of paths, thus be stable") {
+      Given("the modified example of the site all permutations (1.814.400)")
       cases(17).permutations.foreach(casus => assert(
         TilesSolver.findPaths(casus) ===
           Set(List(),

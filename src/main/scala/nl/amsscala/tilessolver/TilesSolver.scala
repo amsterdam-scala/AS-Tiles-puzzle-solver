@@ -64,6 +64,10 @@ object TilesSolver extends App {
   def findPaths(tiles: TilesToUse): Set[Path] = {
     /** Available tiles to combine with. */
     val tilesNotEndingInTheMiddle = tiles.filter(_.end != C)
+    
+    case class asset(val inHand:TilesToUse, outHand:TilesToUse){
+      
+    }
 
     def walk(trail: TilesToUse, //Comparative objects A
              candidates: TilesToUse, //comparative objects B
@@ -100,9 +104,9 @@ object TilesSolver extends App {
       maintainedPaths = Set.empty)
   } // def findPaths(
 
-  val result = findPaths(List( // Accumulated results
-    Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(W, S), Tile(C, E), Tile(S, W),
-    Tile(N, E), Tile(N, S), Tile(W, C)))
+  val result = findPaths(List( // The example on the photo
+    Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(W, S),
+    Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C)))
 
   println(s"Number of unique paths: ${result.size - 1}, solution(s):")
   println(result.filter(_.length == result.maxBy(_.length).length).mkString("\n"))
