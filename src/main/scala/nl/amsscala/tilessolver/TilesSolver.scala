@@ -15,7 +15,8 @@ import scala.annotation.tailrec
  *  Set[List[Path]] a.k.a. Set[List[List[Tile]]]
  *  because out the leftover tiles eventually
  *  more path(s) could be found.
- *  e.g. Set(List(List(Tile(C,E),Tile(W,C)),List(Tile(C,E),Tile(W,C))))
+ *  e.g. Set(List(List(Tile(C,E),Tile(W,C)),
+ *                List(Tile(C,E),Tile(W,C))))
  *
  *  But this has to be left for a future exercise.
  *

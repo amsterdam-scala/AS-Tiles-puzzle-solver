@@ -36,6 +36,7 @@ Tile(N, E), Tile(N, S), Tile(W, C)```
 This results in a solution of two list:
 
 ```List(Tile(C,E), Tile(W,S), Tile(N,S), Tile(N,E), Tile(W,E), Tile(W,C))``` and
+
 ```List(Tile(C,E), Tile(W,E), Tile(W,S), Tile(N,S), Tile(N,E), Tile(W,C))```
 
 # Tricks
