@@ -43,7 +43,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
       }
       assert(thrown.getMessage === "requirement failed: Not a proper tile definition, given C, C are the same.")
     }
-    
+
     it("should result in a set with one empty path") {
       given("an empty list")
       expectResult(Set(Nil)) { TilesSolver.findPaths(cases(0)) }

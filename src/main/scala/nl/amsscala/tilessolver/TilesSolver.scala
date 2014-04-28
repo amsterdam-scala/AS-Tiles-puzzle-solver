@@ -10,11 +10,13 @@ import scala.annotation.tailrec
  *  and   Path is an ordered List[Tile]
  *  so Set[Path] = Set[List[Tile]]
  *
- *  Theoretically should the outcome be
+ *  Theoretically the outcome should be:
  *
- *  Set[Set[Path]] a.k.a. Set[Set[List[Tile]]]
+ *  Set[List[Path]] a.k.a. Set[List[List[Tile]]]
  *  because out the leftover tiles eventually
  *  more path(s) could be found.
+ *  e.g. Set(List(List(Tile(C,E),Tile(W,C)),List(Tile(C,E),Tile(W,C))))
+ *
  *  But this has to be left for a future exercise.
  *
  *  @author A'dam Scala Tiles-puzzle-solver team
@@ -64,9 +66,9 @@ object TilesSolver extends App {
   def findPaths(tiles: TilesToUse): Set[Path] = {
     /** Available tiles to combine with. */
     val tilesNotEndingInTheMiddle = tiles.filter(_.end != C)
-    
-    case class asset(val inHand:TilesToUse, outHand:TilesToUse){
-      
+
+    case class AssetHandling(val inHand: TilesToUse, outHand: TilesToUse) {
+
     }
 
     def walk(trail: TilesToUse, //Comparative objects A
