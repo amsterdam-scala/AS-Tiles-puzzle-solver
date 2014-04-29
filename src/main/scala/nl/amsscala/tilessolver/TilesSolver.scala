@@ -5,6 +5,8 @@ import scala.annotation.tailrec
 
 /** Tile solver program
  *
+ *  Find the longest chain of connected tiles.
+ *
  *  Signature is findPaths(tiles: TilesToUse): Set[Path]
  *  where TilesToUse is an unordered List[Tile]
  *  and   Path is an ordered List[Tile]
@@ -50,67 +52,61 @@ object TilesSolver extends App {
   /** Descriptor for a tile direction indicated with a arrow
    *  @param	start The from or incoming of tile (tail of arrow)
    *  @param	end	The to or outgoing side of tile (arrowhead)
-   *  @throws
+   *  @throws	java.lang.IllegalArgumentException
    */
   case class Tile(val start: Direction, val end: Direction) {
     require(start != end, s"Not a proper tile definition, given $start, $end are the same.")
   }
 
-  type Path = List[Tile]
-  type TilesToUse = Path
-
-  val l = List(Tile(C, E), Tile(W, C))
+  type Chain = List[Tile]
+  type TilesToUse = Chain
 
   /** Returns a set of possible paths starting
    *  and ending with a start and ending tile.
    */
-  def findPaths(tiles: TilesToUse): Set[Path] = {
+  def findChains(tiles: TilesToUse): Set[Chain] = {
     /** Available tiles to combine with. */
     val tilesNotEndingInTheMiddle = tiles.filter(_.end != C)
 
     case class AssetHandling(val candidates: TilesToUse = tilesNotEndingInTheMiddle, //comparative objects B
                              onHand: TilesToUse = tilesNotEndingInTheMiddle, //Actual unused tiles
-                             outHand: Path = Nil //Actual promising combinations in progress
+                             outHand: Chain = Nil //Actual promising combinations in progress
                              ) {
 
-      def completeFoundEndingSequence(previousTile: Tile) =
+      def processFoundTile(previousTile: Tile) =
         {
-          // Test if we found a path with a center ending tile
+          val restOnHand = onHand diff List(candidates.head)
+          val (assetToTransfer, influencePath) = // Test if we found a path with a center ending tile
+            // Invoke a complete found ending sequence by empty list
+            if (candidates.head.start == C) (List(candidates.head, previousTile), Nil)
+            else (List(previousTile), restOnHand)
 
-          val rest = if (candidates.head.start == C) Nil else onHand diff List(candidates.head)
-
-          val assetToTransfer =
-            if (candidates.head.start == C) List(candidates.head, previousTile) else List(previousTile)
-
-          // Invoke a complete found ending sequence by empty list
-          AssetHandling(if (candidates.head.start == C) Nil else onHand diff List(candidates.head),
-            onHand diff List(candidates.head), // explore further without used tile
+          AssetHandling(influencePath,
+            restOnHand, // explore further without used tile
             // If ending tile save 2 tiles, including the ending one
             assetToTransfer ++ outHand)
         }
 
+      def isNotValidTileChain = outHand.isEmpty || (outHand.head.start != C)
     }
 
     def walk(trail: TilesToUse, //Comparative objects A
              asset: AssetHandling,
-             maintainedPaths: Set[Path] /*List of paths already discovered*/ ): Set[Path] = {
+             maintainedPaths: Set[Chain] /*List of paths already discovered*/ ): Set[Chain] = {
+
       if (trail.isEmpty) maintainedPaths + asset.outHand // distinct of a set is necessary, don't know why
       else if (asset.candidates.isEmpty) { // Try a new walk 
-        walk(trail.tail, AssetHandling(),
-          if (asset.outHand.isEmpty || (asset.outHand.head.start != C)) maintainedPaths
-          else maintainedPaths + asset.outHand)
+        walk(trail.tail,
+          AssetHandling( /*onHand = asset.onHand*/ ),
+          if (asset.isNotValidTileChain) maintainedPaths else maintainedPaths + asset.outHand)
       } else // Do a matching with each other tile
         walk(trail, AssetHandling(asset.candidates.tail, asset.onHand, asset.outHand),
-
-          maintainedPaths ++
-            (if (trail.head.start isJoinable asset.candidates.head.end) {
-              walk( // Start of actual walk parameter list
-                List(asset.candidates.head), // explore further with new found tile
-
-                asset.completeFoundEndingSequence(trail.head),
-
-                maintainedPaths) // End of actual walk parameter list
-            } else Nil))
+          maintainedPaths ++ (if (trail.head.start isJoinable asset.candidates.head.end) {
+            walk( // Start of actual walk parameter list
+              List(asset.candidates.head), // explore further with new found tile
+              asset.processFoundTile(trail.head),
+              maintainedPaths) // End of actual walk parameter list
+          } else Nil))
     } // def walk(
 
     walk(trail = tiles.filter(_.end == C).distinct, // Start with ending tiles, one of each
@@ -118,7 +114,7 @@ object TilesSolver extends App {
       maintainedPaths = Set.empty)
   } // def findPaths(
 
-  val result = findPaths(List( // The example on the photo
+  val result = findChains(List( // The example on the photo
     Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(W, S),
     Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C)))
 
