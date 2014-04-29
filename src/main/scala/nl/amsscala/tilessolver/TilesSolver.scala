@@ -68,42 +68,52 @@ object TilesSolver extends App {
     /** Available tiles to combine with. */
     val tilesNotEndingInTheMiddle = tiles.filter(_.end != C)
 
-    case class AssetHandling(val inHand: TilesToUse, outHand: TilesToUse) {
-
+    case class AssetHandling(val candidates: TilesToUse, //comparative objects B
+                             onHand: TilesToUse, //Actual unused tiles
+                             outHand: Path //Actual promising combinations in progress
+                             ) {
+      def completeFoundEndingSequence(previousTile: Tile) =
+        {
+          // Invoke a complete found ending sequence by empty list
+          AssetHandling(if (candidates.head.start == C) Nil else
+            onHand diff List(candidates.head),
+            onHand diff List(candidates.head), // explore further without used tile
+            // If ending tile save 2 tiles, including the ending one
+            (if (candidates.head.start == C) List(candidates.head, previousTile) else List(previousTile))
+              ++ outHand)
+        }
     }
 
     def walk(trail: TilesToUse, //Comparative objects A
-             candidates: TilesToUse, //comparative objects B
-             onHand: TilesToUse, //Actual unused tiles
-             explored: Path, //Actual promising combinations in progress
-             maintainedPaths: Set[Path] //List of paths already discovered
-             ): Set[Path] = {
-      if (trail.isEmpty) maintainedPaths + explored // distinct of a set is necessary, don't know why
-      else if (candidates.isEmpty) { // Try a new walk 
-        walk(trail.tail,
-          tilesNotEndingInTheMiddle,
-          onHand = tilesNotEndingInTheMiddle,
-          Nil,
-          if (explored.isEmpty || (explored.head.start != C)) maintainedPaths else maintainedPaths + explored)
+
+             asset: AssetHandling,
+
+             maintainedPaths: Set[Path] /*List of paths already discovered*/ ): Set[Path] = {
+      if (trail.isEmpty) maintainedPaths + asset.outHand // distinct of a set is necessary, don't know why
+      else if (asset.candidates.isEmpty) { // Try a new walk 
+        walk(trail.tail, AssetHandling(tilesNotEndingInTheMiddle, tilesNotEndingInTheMiddle, Nil),
+          if (asset.outHand.isEmpty || (asset.outHand.head.start != C)) maintainedPaths
+          else maintainedPaths + asset.outHand)
       } else // Do a matching with each other tile
-        walk(trail, candidates.tail, onHand, explored, maintainedPaths ++
-          (if (trail.head.start isJoinable candidates.head.end) { // if jointable
-            walk( // Start of actual walk parameter list
-              List(candidates.head), // explore further with new found tile
-              // Invoke a complete found ending sequence by empty list
-              if (candidates.head.start == C) Nil else onHand diff List(candidates.head),
-              onHand diff List(candidates.head), // explore further without used tile
-              explored = // If ending tile save 2 tiles, including the ending one
-                (if (candidates.head.start == C) List(candidates.head, trail.head) else List(trail.head))
-                  ++ explored,
-              maintainedPaths) // End of actual walk parameter list
-          } else Nil))
+        walk(trail,
+
+          AssetHandling(asset.candidates.tail, asset.onHand, asset.outHand),
+
+          maintainedPaths ++
+            (if (trail.head.start isJoinable asset.candidates.head.end) {
+              walk( // Start of actual walk parameter list
+                List(asset.candidates.head), // explore further with new found tile
+
+                asset.completeFoundEndingSequence(trail.head),
+
+                maintainedPaths) // End of actual walk parameter list
+            } else Nil))
     } // def walk(
 
     walk(trail = tiles.filter(_.end == C).distinct, // Start with ending tiles, one of each
-      candidates = tilesNotEndingInTheMiddle.distinct, // Other tiles to compare with, one of each
-      onHand = tilesNotEndingInTheMiddle, // Nearly all tiles to start over
-      explored = Nil, // intermediate result
+
+      AssetHandling(tilesNotEndingInTheMiddle.distinct, tilesNotEndingInTheMiddle, Nil),
+
       maintainedPaths = Set.empty)
   } // def findPaths(
 
