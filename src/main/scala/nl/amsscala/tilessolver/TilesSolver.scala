@@ -14,7 +14,7 @@ import scala.annotation.tailrec
  *
  *  Set[List[Path]] a.k.a. Set[List[List[Tile]]]
  *  because out the leftover tiles eventually
- *  more path(s) could be found.
+ *  more coexisting path(s) could be found.
  *  e.g. Set(List(List(Tile(C,E),Tile(W,C)),
  *                List(Tile(C,E),Tile(W,C))))
  *
@@ -68,36 +68,39 @@ object TilesSolver extends App {
     /** Available tiles to combine with. */
     val tilesNotEndingInTheMiddle = tiles.filter(_.end != C)
 
-    case class AssetHandling(val candidates: TilesToUse, //comparative objects B
-                             onHand: TilesToUse, //Actual unused tiles
-                             outHand: Path //Actual promising combinations in progress
+    case class AssetHandling(val candidates: TilesToUse = tilesNotEndingInTheMiddle, //comparative objects B
+                             onHand: TilesToUse = tilesNotEndingInTheMiddle, //Actual unused tiles
+                             outHand: Path = Nil //Actual promising combinations in progress
                              ) {
+
       def completeFoundEndingSequence(previousTile: Tile) =
         {
+          // Test if we found a path with a center ending tile
+
+          val rest = if (candidates.head.start == C) Nil else onHand diff List(candidates.head)
+
+          val assetToTransfer =
+            if (candidates.head.start == C) List(candidates.head, previousTile) else List(previousTile)
+
           // Invoke a complete found ending sequence by empty list
-          AssetHandling(if (candidates.head.start == C) Nil else
-            onHand diff List(candidates.head),
+          AssetHandling(if (candidates.head.start == C) Nil else onHand diff List(candidates.head),
             onHand diff List(candidates.head), // explore further without used tile
             // If ending tile save 2 tiles, including the ending one
-            (if (candidates.head.start == C) List(candidates.head, previousTile) else List(previousTile))
-              ++ outHand)
+            assetToTransfer ++ outHand)
         }
+
     }
 
     def walk(trail: TilesToUse, //Comparative objects A
-
              asset: AssetHandling,
-
              maintainedPaths: Set[Path] /*List of paths already discovered*/ ): Set[Path] = {
       if (trail.isEmpty) maintainedPaths + asset.outHand // distinct of a set is necessary, don't know why
       else if (asset.candidates.isEmpty) { // Try a new walk 
-        walk(trail.tail, AssetHandling(tilesNotEndingInTheMiddle, tilesNotEndingInTheMiddle, Nil),
+        walk(trail.tail, AssetHandling(),
           if (asset.outHand.isEmpty || (asset.outHand.head.start != C)) maintainedPaths
           else maintainedPaths + asset.outHand)
       } else // Do a matching with each other tile
-        walk(trail,
-
-          AssetHandling(asset.candidates.tail, asset.onHand, asset.outHand),
+        walk(trail, AssetHandling(asset.candidates.tail, asset.onHand, asset.outHand),
 
           maintainedPaths ++
             (if (trail.head.start isJoinable asset.candidates.head.end) {
@@ -111,9 +114,7 @@ object TilesSolver extends App {
     } // def walk(
 
     walk(trail = tiles.filter(_.end == C).distinct, // Start with ending tiles, one of each
-
-      AssetHandling(tilesNotEndingInTheMiddle.distinct, tilesNotEndingInTheMiddle, Nil),
-
+      AssetHandling(candidates = tilesNotEndingInTheMiddle.distinct),
       maintainedPaths = Set.empty)
   } // def findPaths(
 
