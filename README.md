@@ -42,6 +42,7 @@ This results in a solution of two list:
 # Tricks
 - the algorithm start with one of the ending tiles, this is done for the nature of List prepending is computational cheaper than appending.
 - we used high order *combinators* (```filter()```, ```distinct```, etc.) to implement the solver's algorithm
+- Although we have to use Set, the use is postponed by using List because a Set has overhead to enforce uniqueness. 
 - removing one element in List is easily made with the diff List(elem)
 
 ## Contributing / Issues
