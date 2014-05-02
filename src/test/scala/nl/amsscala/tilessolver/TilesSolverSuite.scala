@@ -119,7 +119,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
           List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, C))))
     }
 
-    info("The following tests are permutations so are processor intensive. 4 or more minutes.")
+    info("The last tests are permutations so are processor intensive. 4 or more minutes.")
 
     it("should every time the same lists of chains, thus be stable") {
       Given("the modified example of the site all permutations (1.814.400)")

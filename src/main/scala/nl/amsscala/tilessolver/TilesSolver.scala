@@ -1,67 +1,9 @@
 package nl.amsscala
 package tilessolver
 
-import scala.annotation.tailrec
-
-/** Tile solver program
- *
- *  Find the longest chain of connected tiles.
- *
- *  Signature is `findChains(tiles: TilesToUse): Set[Chain]`
- *  where `TilesToUse` is an unordered `List[Tile]`
- *  and `Chain` is a sequential `List[Tile]`
- *  so `Set[Chain] = Set[List[Tile]]`
- *  The first element of a `Chain` holds the start tile and
- *  the element the ending tile.
- *
- *  Theoretically the outcome should be:
- *
- *  `Set[List[Chain]]` a.k.a. `Set[List[List[Tile]]]`
- *  because out the leftover tiles eventually
- *  more coexisting chain(s) could be found.
- *  e.g. `Set(List(List(Tile(C,E),Tile(W,C)),
- *                List(Tile(C,E),Tile(W,C))))`
- *
- *  But this has to be left for a future exercise.
- *
- *  @author A'dam Scala Tiles-puzzle-solver team
- */
 object TilesSolver extends App {
 
-  /** Enumeration of the connection side of a tile*/
-  object Direction extends Enumeration {
-    case class Direction() extends Val {
-      /** Returns allowed tile side chain-joint*/
-      def allowedAdjacent =
-        this match {
-          case N => S
-          case E => W
-          case S => N
-          case W => E
-        }
-
-      /** Test if the sides of titles pair could be adjacent.
-       *  The function return true if the ending side meets a legal terminating side.
-       */
-      def isJoinable(adjacent: Direction) = (this != C) && adjacent == allowedAdjacent
-    }
-    /** Side names of Tiles */
-    val C, N, E, S, W = Direction() // Center, North, East, South ...
-  } // object Direction
-
   import Direction._
-
-  /** Descriptor for a tile direction indicated with a arrow
-   *  @param	start The from or incoming of tile (tail of arrow)
-   *  @param	end	The to or outgoing side of tile (arrowhead)
-   *  @throws	java.lang.IllegalArgumentException If start and end are the same.
-   */
-  case class Tile(val start: Direction, val end: Direction) {
-    require(start != end, s"Not a proper tile definition, given $start, $end are the same.")
-  }
-
-  type Chain = List[Tile]
-  type TilesToUse = Chain
 
   /** Returns a set of possible chains starting
    *  and ending with a start and ending tile.
@@ -115,15 +57,18 @@ object TilesSolver extends App {
           } else Nil))
     } // def walk(
 
-    walk(trail = tiles.filter(_.end == C).distinct, // Start with ending tiles, one of each
+    walk(tiles.filter(_.end == C).distinct, // Start with ending tiles, one of each
       AssetHandling(candidates = tilesNotEndingInTheMiddle.distinct),
       maintainedChains = Set.empty)
   } // def findChains(
 
-  val result = findChains(List( // The example on the photo
+  private val result = findChains(List( // The example on the photo
     Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(W, S),
     Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C)))
 
-  println(s"Number of unique chains: ${result.size - 1}, solution(s):")
-  println(result.filter(_.length == result.maxBy(_.length).length).mkString("\n"))
+  println(
+    s"Number of unique chains: ${result.size - 1}, longest: ${result.foldLeft(0)(_ max _.size)} tiles, longest solution(s):")
+
+  // One or more chains could be a valid outcome
+  println(result.filter(_.length == result.foldLeft(0)(_ max _.size)).mkString("\n"))
 }

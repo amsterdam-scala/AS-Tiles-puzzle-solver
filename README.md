@@ -6,7 +6,7 @@ This program solves the puzzle described by the image below.
 
 # The Puzzle Rules
 
-![puzzle](http://famsterdamworld.com/ticofab/puzzle.jpg)
+![puzzle](https://camo.githubusercontent.com/e2fa2b446dc8f521d142b76c577df55cbe36d1c9/687474703a2f2f66616d7374657264616d776f726c642e636f6d2f7469636f6661622f70757a7a6c652e6a7067)
 
 
 # The Model
