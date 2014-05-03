@@ -25,7 +25,9 @@ package nl.amsscala
  */
 
 package object tilessolver {
+  /** A sequential List of a valid combination of tiles.*/
   type Chain = List[Tile]
+  /** An unordered list of tiles.*/
   type TilesToUse = Chain
 
   /** Enumeration of the connection side of a tile*/
@@ -51,7 +53,7 @@ package object tilessolver {
 
   import Direction._
 
-  /** Descriptor for a tile direction indicated with a arrow
+  /** Descriptor for a tile, direction indicated with a arrow
    *  @param	start The from or incoming of tile (tail of arrow)
    *  @param	end	The to or outgoing side of tile (arrowhead)
    *  @throws	java.lang.IllegalArgumentException If start and end are the same.

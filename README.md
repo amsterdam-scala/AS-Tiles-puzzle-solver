@@ -6,7 +6,7 @@ This program solves the puzzle described by the image below.
 
 # The Puzzle Rules
 
-![puzzle](https://camo.githubusercontent.com/e2fa2b446dc8f521d142b76c577df55cbe36d1c9/687474703a2f2f66616d7374657264616d776f726c642e636f6d2f7469636f6661622f70757a7a6c652e6a7067)
+![puzzle](https://raw.githubusercontent.com/amsterdam-scala/AS-Tiles-puzzle-solver/master/graphics/DrawnTilesRules.png)
 
 
 # The Model
@@ -17,7 +17,7 @@ On a tile there is a directed path which can described as an incoming or start-s
 
 ## Tile Relationships
 
-We define the matching function between the ends of two tiles with the ```isJoinable``` test function (in Scala it could also be seen as an operator). An outgoing ending can be connected with the counter direction of the incoming ending of the other tile. E.g. *N* with *S*, *W* with *E* and theoretical vice-versa. The *C* "ending" cannot be connected with any other tile. The ending side is taken in account with the start, so ending side *N* matches with *S* and so on.
+We define the matching function between the ends of two tiles with the ```isJoinable``` test function (in Scala it could also be seen as an operator). An outgoing ending can be connected with the counter direction of the incoming ending of the other tile. E.g. *N* with ```S```, ```W``` with ```E``` and theoretical vice-versa. The ```C``` "ending" cannot be connected with any other tile. The ending side is taken in account with the start, so ending side ```N``` matches with ```S``` and so on.
 
 # The Solver
 
@@ -39,11 +39,11 @@ This results in a solution of two list:
 
 ```List(Tile(C,E), Tile(W,E), Tile(W,S), Tile(N,S), Tile(N,E), Tile(W,C))```
 
-# Tricks
-- the algorithm start with one of the ending tiles, this is done for the nature of List prepending is computational cheaper than appending.
+# Hints & Kinks 
+- The algorithm start with one of the ending tiles, this is done for the nature of List prepending is computational cheaper than appending.
 - we used high order *combinators* (```filter()```, ```distinct```, etc.) to implement the solver's algorithm
 - Although we have to use Set, the use is postponed by using List because a Set has overhead to enforce uniqueness. 
-- removing one element in List is easily made with the diff List(elem)
+- Removing one element in List is easily made with the ```diff List(elem)```
 
 ## Contributing / Issues
 

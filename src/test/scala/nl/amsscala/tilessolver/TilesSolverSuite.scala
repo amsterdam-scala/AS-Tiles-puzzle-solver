@@ -46,57 +46,56 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
 
     it("should result in a set with one empty chain") {
       given("an empty list")
-      expectResult(Set(Nil)) { TilesSolver.findChains(cases(0)) }
+      expectResult(Set()) { TilesSolver.findChains(cases(0)) }
 
       given("single tile West Center")
-      expectResult(Set(Nil))(TilesSolver.findChains(cases(1)))
+      expectResult(Set())(TilesSolver.findChains(cases(1)))
 
       given("single tile Center West")
-      expectResult(Set(Nil))(TilesSolver.findChains(cases(2)))
+      expectResult(Set())(TilesSolver.findChains(cases(2)))
 
       given("single tile West East")
-      expectResult(Set(Nil))(TilesSolver.findChains(cases(3)))
+      expectResult(Set())(TilesSolver.findChains(cases(3)))
 
       given("two same tiles")
-      expectResult(Set(Nil))(TilesSolver.findChains(cases(4)))
+      expectResult(Set())(TilesSolver.findChains(cases(4)))
 
       given("two mirrored tiles")
-      expectResult(Set(Nil))(TilesSolver.findChains(cases(5)))
+      expectResult(Set())(TilesSolver.findChains(cases(5)))
 
       given("two mirrored centered tiles")
-      expectResult(Set(Nil))(TilesSolver.findChains(cases(6)))
+      expectResult(Set())(TilesSolver.findChains(cases(6)))
 
       given("three mirrored centered tiles")
-      cases(7).permutations.foreach(casus => assert(TilesSolver.findChains(casus) === Set(Nil)))
+      cases(7).permutations.foreach(casus => assert(TilesSolver.findChains(casus) === Set()))
     }
 
     it("given two correct centered tiles should result in a set of chains") {
       cases(9).permutations.
-        foreach(casus => assert(TilesSolver.findChains(casus) === Set(List(), List(Tile(C, S), Tile(N, C)))))
+        foreach(casus => assert(TilesSolver.findChains(casus) === Set(List(Tile(C, S), Tile(N, C)))))
     }
 
     it("given three correct reversed centered tiles should result in a set of chains") {
       cases(11).permutations.
-        foreach(casus => assert(TilesSolver.findChains(casus) === Set(List(), List(Tile(C, S), Tile(N, C)))))
+        foreach(casus => assert(TilesSolver.findChains(casus) === Set(List(Tile(C, S), Tile(N, C)))))
     }
 
     // 
     it("given four alternated reversed centered tiles should result in a set of chains") {
-      assert(TilesSolver.findChains(cases(14)) === Set(List(), List(Tile(C, S), Tile(N, C))))
+      assert(TilesSolver.findChains(cases(14)) === Set(List(Tile(C, S), Tile(N, C))))
     }
     it("given four alternated reversed centered tiles should still result in a set of chains") {
-      assert(TilesSolver.findChains(cases(15)) === Set(List(), List(Tile(C, S), Tile(N, C))))
+      assert(TilesSolver.findChains(cases(15)) === Set(List(Tile(C, S), Tile(N, C))))
     }
 
     it("given four cross reversed centered tiles should still result in a set of chains") {
       assert(TilesSolver.findChains(cases(16)) ===
-        Set(List(), List(Tile(C, S), Tile(N, C)), List(Tile(C, E), Tile(W, C))))
+        Set(List(Tile(C, S), Tile(N, C)), List(Tile(C, E), Tile(W, C))))
     }
 
     it("given the modified example of the site should still result in a set of chains") {
       assert(TilesSolver.findChains(cases(17)) ===
         Set( //
-          List(), //
           List(Tile(C, E), Tile(W, C)), //
           List(Tile(C, E), Tile(W, E), Tile(W, C))))
     }
@@ -104,7 +103,6 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
     it("given the example of the site should still result in a set of chains") {
       assert(TilesSolver.findChains(cases(18)) ===
         Set( //
-          List(), //
           List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)), //
           List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)), //
           List(Tile(C, E), Tile(W, S), Tile(N, E), Tile(W, C)), //
@@ -124,7 +122,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
     it("should every time the same lists of chains, thus be stable") {
       Given("the modified example of the site all permutations (1.814.400)")
       cases(17).permutations.foreach(casus => assert(TilesSolver.findChains(casus) ===
-        Set(List(),
+        Set(
           List(Tile(C, E), Tile(W, E), Tile(W, C)),
           List(Tile(C, E), Tile(W, C)))))
 
@@ -141,7 +139,6 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
           List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, C)),
           List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, C)),
           List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)),
-          List(),
           List(Tile(C, E), Tile(W, E), Tile(W, C)),
           List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)))))
     }
