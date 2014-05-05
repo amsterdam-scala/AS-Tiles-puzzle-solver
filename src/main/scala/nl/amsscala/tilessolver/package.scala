@@ -31,8 +31,8 @@ package object tilessolver {
   type TilesToUse = Chain
 
   /** Enumeration of the connection side of a tile*/
-  object Direction extends Enumeration {
-    case class Direction() extends Val {
+  object Directions extends Enumeration {
+    case class Directi() extends Val {
       /** Returns allowed tile side chain-joint*/
       def allowedAdjacent =
         this match {
@@ -45,20 +45,21 @@ package object tilessolver {
       /** Test if the sides of titles pair could be adjacent.
        *  The function return true if the ending side meets a legal terminating side.
        */
-      def isJoinable(adjacent: Direction) = (this != C) && adjacent == allowedAdjacent
+      def isJoinable(adjacent: Directi) = (this != C) && adjacent == allowedAdjacent
     }
+    //    type Directions = Directi
     /** Side names of Tiles */
-    val C, N, E, S, W = Direction() // Center, North, East, South ...
-  } // object Direction
+    val C, N, E, S, W = Directi() // Center, North, East, South ...
+  } // object Directions
 
-  import Direction._
+  import Directions._
 
   /** Descriptor for a tile, direction indicated with a arrow
    *  @param	start The from or incoming of tile (tail of arrow)
    *  @param	end	The to or outgoing side of tile (arrowhead)
    *  @throws	java.lang.IllegalArgumentException If start and end are the same.
    */
-  case class Tile(val start: Direction, val end: Direction) {
+  case class Tile(val start: Directi, end: Directi) {
     require(start != end, s"Not a proper tile definition, given $start, $end are the same.")
   }
 }

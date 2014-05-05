@@ -3,7 +3,7 @@ package tilessolver
 
 object TilesSolver extends App {
 
-  import Direction.{ C, N, E, S, W }
+  import Directions.{ C, N, E, S, W }
 
   /** Returns a set of possible chains starting
    *  and ending with a start and ending tile.

@@ -5,9 +5,9 @@ object TwoDim extends App {
   /** Convert List[Tile] to Map[coordinate,Tile]
    */
 
-  import Direction._
+  import Directions._
 
-  def step(stap: Direction, ori: (Int, Int)) = stap match {
+  def step(stap: Directi, ori: (Int, Int)) = stap match {
     case N => (ori._1, ori._2 + 1)
     case E => (ori._1 + 1, ori._2)
     case S => (ori._1, ori._2 - 1)
