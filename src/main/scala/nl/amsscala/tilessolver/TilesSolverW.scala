@@ -2,12 +2,17 @@ package nl.amsscala.tilessolver
 
 import java.awt.Color
 import java.awt.Dimension
+import java.awt.Toolkit
 import scala.swing.{ BorderPanel, BoxPanel, Button, Component }
 import scala.swing.{ GridPanel, Label, MainFrame, Orientation }
 import scala.swing.{ ScrollPane, SimpleSwingApplication, TextArea, event }
 import javax.swing.ImageIcon
 
 object TilesSolverW extends SimpleSwingApplication {
+  val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+
+  val applicationTitle = "Scala Tiles Puzzle Solver"
+
   private val dim = new Dimension(42, 42)
 
   import Directions._
@@ -110,7 +115,8 @@ object TilesSolverW extends SimpleSwingApplication {
   } // def ui
 
   def top = new MainFrame {
-    title = "Scala Tiles Puzzle Solver"
+    title = applicationTitle
+    menuBar = ViewMenu.menuBar
     contents = ui()
     centerOnScreen
   }
