@@ -20,7 +20,7 @@ object TwoDim extends App {
       (currentCoord :: resultingTuple._1, currentCoord + resultingTuple._2)
   }
 
-  def toDim(chain: Chain) =
+  def toDim(chain: Chain): Map[(Int, Int), Tile] =
     chain.foldLeft(List[((Int, Int), Tile)](), (0, 0)) {
       (resultingTuple, currentTile) =>
         (((resultingTuple._2, currentTile)) :: resultingTuple._1, step(currentTile.end, resultingTuple._2))
