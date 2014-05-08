@@ -23,43 +23,29 @@ object TilesSolverW extends SimpleSwingApplication {
   def ui(toolbar: Option[Component] = None) = new BorderPanel() {
 
     var givenTiles: TilesToUse = Nil
+    /*  List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(W, S),
+      Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C))*/
 
     val given = new TextArea(5, 20) { editable = false }
     val output = new TextArea(5, 20) { editable = false }
 
     def outputGrid(toDraw: Map[(Int, Int), Tile]): GridPanel = {
 
-      val extremes = toDraw.keys.foldLeft((toDraw.keys.head, toDraw.keys.head)) {
-        (accu, tileCoord) =>
-          ((accu._1._1 min tileCoord._1, accu._1._2 min tileCoord._2),
-            (accu._2._1 max tileCoord._1, accu._2._2 max tileCoord._2))
-      }
-      println(toDraw)
-      println(extremes)
-
-      val min = extremes._1
-      val max = extremes._2
-
-      //      println(s"Size: ${drawIn.columns}, ${drawIn.rows}, Min: $min max: $max")
+      val extremes = Tessellation.computeExtremes(toDraw) // Compute the extremes, Most Top Left and the Most Bottom Right
+      val (min, max) = (extremes._1, extremes._2)
 
       new GridPanel(1 + max._2 - min._2, 1 + max._1 - min._1) {
         contents ++= {
           for (
-            y <- (min._2 to max._2);
+            y <- min._2 to max._2;
             x <- min._1 to max._1
           ) yield new Label {
-
             val tile = toDraw.get((x, y))
-            //            println(s"Lookup: ${x} ${y} $tile")
             icon = if (tile.isDefined) getImage(tile.get) else blancImg
           }
         }
-
-        //        println(drawIn.contents.length)
       }
     }
-
-    //    drawTwoDin(Map((1, 0) -> Tile(C, S)), outGrid)
 
     def buttonsSeq = {
       import Directions._
@@ -72,9 +58,10 @@ object TilesSolverW extends SimpleSwingApplication {
           val ret =
             if (x == y) (None, blancImg)
             else (Option(Tile(x, y)), getImage(Tile(x, y)))
+          tooltip = ret._1.getOrElse(None).toString()
           icon = ret._2
           ret._1
-        }
+        } // def butFingerprint
 
         contentAreaFilled = true
         background = Color.GRAY
@@ -91,25 +78,20 @@ object TilesSolverW extends SimpleSwingApplication {
             if (tile.isDefined) givenTiles ++= List(tile.get)
             given.text = s"$givenTiles\n"
 
-            val result = TilesSolver.findChains(givenTiles)
-            val longestLen = result.foldLeft(0)(_ max _.size)
+            val solution = TilesSolver.findChains(givenTiles)
+            val longestLen = solution.foldLeft(0)(_ max _.size)
+            val oneOfTheSolutions = Tessellation.toDim(solution.filter(_.length >= longestLen).headOption.getOrElse(Nil))
 
-            val twoDim = TwoDim.toDim(result.filter(_.length >= longestLen).headOption.getOrElse(Nil))
-
-            output.text_=(twoDim.mkString("\n"))
-            if (!twoDim.isEmpty) {
-              /*Swing.onEDT*/ ({
-                mainPanel.contents(3).visible = false // This does the trick of redraw the outputGrid
-                mainPanel.contents.remove(3)
-                mainPanel.contents += outputGrid(twoDim)
-              })
+            output.text_=(oneOfTheSolutions.mkString("\n"))
+            if (!oneOfTheSolutions.isEmpty) {
+              mainPanel.contents(3).visible = false // This does the trick of redraw the outputGrid
+              mainPanel.contents.remove(3)
+              mainPanel.contents += outputGrid(oneOfTheSolutions)
             }
-
           } // event.MouseClicked
-
         }
       } // for yield
-    }
+    } // def buttonsSeq 
 
     def tileBoard: Component =
       new GridPanel(Directions.values.size, Directions.values.size) { contents ++= buttonsSeq }
@@ -118,18 +100,18 @@ object TilesSolverW extends SimpleSwingApplication {
       contents += tileBoard
       contents += new ScrollPane(given)
       contents += new ScrollPane(output)
-      contents += outputGrid(Map((1, 0) -> Tile(C, S)))
+      contents += new BoxPanel(Orientation.Vertical)
     }
 
     // Start of UI view
     if (!toolbar.isEmpty) add(toolbar.get, BorderPanel.Position.North)
     layout(mainPanel) = BorderPanel.Position.Center
     //layout(statusBar) = BorderPanel.Position.South
-
-  }
+  } // def ui
 
   def top = new MainFrame {
     title = "Scala Tiles Puzzle Solver"
     contents = ui()
+    centerOnScreen
   }
 }

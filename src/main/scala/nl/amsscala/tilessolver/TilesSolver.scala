@@ -69,15 +69,19 @@ object TilesSolver extends App {
       maintainedChains = Set.empty)
   } // def findChains(
 
-  private val result = findChains( // The example in the read.me
+  val fabioPhoto =
     List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(W, S),
-      Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C)))
+      Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C))
 
-  private val longestLen = result.foldLeft(0)(_ max _.size)
+  println(s"Given\n$fabioPhoto")
+
+  private val solution = findChains(fabioPhoto) // The example in the read.me
+
+  private val longestLen = solution.foldLeft(0)(_ max _.size)
 
   println(
-    s"Number of unique chains: ${result.size}, longest: $longestLen tiles, longest solution(s):")
+    s"Number of unique chains: ${solution.size}, longest: $longestLen tiles, longest solution(s):")
 
   // One or more chains could be a valid outcome
-  println(result.filter(_.length >= longestLen).mkString("\n"))
+  println(solution.filter(_.length >= longestLen).mkString("\n"))
 }
