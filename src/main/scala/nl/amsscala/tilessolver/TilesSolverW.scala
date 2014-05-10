@@ -1,35 +1,39 @@
 package nl.amsscala.tilessolver
 
-import java.awt.Color
-import java.awt.Dimension
-import java.awt.Toolkit
+import java.awt.{ Color, Dimension, Toolkit }
 import scala.swing.{ BorderPanel, BoxPanel, Button, Component }
-import scala.swing.{ GridPanel, Label, MainFrame, Orientation }
+import scala.swing.{ FlowPanel, GridPanel, Label, MainFrame, Orientation }
 import scala.swing.{ ScrollPane, SimpleSwingApplication, TextArea, event }
 import javax.swing.ImageIcon
 
 object TilesSolverW extends SimpleSwingApplication {
   val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
 
-  val applicationTitle = "Scala Tiles Puzzle Solver"
+  def applicationTitle = "Tiles Puzzle Solver"
+  def applicationShort = "Tiles solver"
 
   private val dim = new Dimension(42, 42)
-
-  import Directions._
-
-  //  val boardSize = Directions.values.size
-  //  val linearIndexRange = 0 until boardSize * boardSize
   val blancImg = new ImageIcon(resourceFromClassloader("resources/TileXX.png"))
 
   def getImage(tile: Tile) = {
     new ImageIcon(resourceFromClassloader(s"resources/Tile${tile.start}${tile.end}.png"))
   }
 
-  def ui(toolbar: Option[Component] = None) = new BorderPanel() {
+  import Directions._
+  private var givenTiles: TilesToUse = Nil
 
-    var givenTiles: TilesToUse = Nil
-    /*  List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(W, S),
-      Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C))*/
+  def changeInput(tiles: TilesToUse) {
+    givenTiles = tiles
+    //    updateGUI
+  }
+
+  object lblStatusField extends Label {
+    text = ViewMenu.t("statusMessageLabel.text")
+    horizontalAlignment = scala.swing.Alignment.Left
+//    this.preferredSize = new Dimension(180, 16)
+  }
+
+  def ui(toolbar: Option[Component] = None) = new BorderPanel() {
 
     val given = new TextArea(5, 20) { editable = false }
     val output = new TextArea(5, 20) { editable = false }
@@ -53,7 +57,6 @@ object TilesSolverW extends SimpleSwingApplication {
     }
 
     def buttonsSeq = {
-      import Directions._
 
       for {
         x <- Directions.values.view
@@ -108,10 +111,12 @@ object TilesSolverW extends SimpleSwingApplication {
       contents += new BoxPanel(Orientation.Vertical)
     }
 
+    private val statusBar = new FlowPanel(FlowPanel.Alignment.Leading)(lblStatusField)
+
     // Start of UI view
     if (!toolbar.isEmpty) add(toolbar.get, BorderPanel.Position.North)
     layout(mainPanel) = BorderPanel.Position.Center
-    //layout(statusBar) = BorderPanel.Position.South
+    layout(statusBar) = BorderPanel.Position.South
   } // def ui
 
   def top = new MainFrame {

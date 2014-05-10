@@ -1,6 +1,7 @@
 package nl.amsscala.tilessolver
 
 import java.awt.event.KeyEvent
+import javax.swing.KeyStroke
 
 import scala.swing.MenuBar
 import scala.swing.Menu
@@ -13,111 +14,116 @@ import scala.swing.Separator
 import scala.swing.MenuItem
 import javax.swing.KeyStroke
 
+import TilesSolverW.shortcutKeyMask
+import TilesSolverW.changeInput
+import TilesSolverW.applicationShort
+
 object ViewMenu {
   private val AMPERSAND = '&'
 
-  def t(key: String) = key
+  def t(key: String) = key // Placeholder for resource manager
 
-  private def menuItemFactory(
-    pActionTitleResourceText: String,
-    pActionBlock: => Unit,
-    pAccelerator: Option[javax.swing.KeyStroke] = None,
-    pIcon: javax.swing.Icon = EmptyIcon): MenuItem =
-    {
-      val comp = new MenuItem("")
-      mutateTextNmeIcon(comp, pActionTitleResourceText, pActionBlock, pAccelerator, pIcon)
-      comp
+  protected[tilessolver] def menuBar = new MenuBar {
+    private def menuItemFactory(
+      pActionTitleResourceText: String,
+      pActionBlock: => Unit,
+      pAccelerator: Option[KeyStroke] = None,
+      pIcon: javax.swing.Icon = EmptyIcon): MenuItem =
+      {
+        val comp = new MenuItem("")
+        mutateTextNmeIcon(comp, pActionTitleResourceText, pActionBlock, pAccelerator, pIcon)
+        comp
+      }
+
+    private def mutateTextNmeIcon(
+      pComp: AbstractButton,
+      pActionTitleResourceText: String,
+      pActionBlock: => Unit = {},
+      pAccelerator: Option[KeyStroke] = None,
+      pIcon: javax.swing.Icon = EmptyIcon) {
+
+      /** The mnemonic character is the first character after an ampersand character (&) in the text
+       *  of the MenuItem. This function will not return a mnemonic if two ampersand characters are
+       *  placed together as the ampersands are used to display an ampersand in the text of the
+       *  MenuItem instead of defining a mnemonic character.
+       *  The function returns a kind of mnemonic character / text pair.
+       */
+      val (mne, mnuItemText) = {
+        val text = t(pActionTitleResourceText)
+        // The mnemonic parser, filter the mnemonic character(s)
+        (text.replaceAll("&&", "").sliding(2).filter(_.init == "&").take(1),
+          "&[^&]".r.replaceAllIn(text, m => m.matched.tail)) // Filter the ampersands
+      }
+
+      pComp.action = Action(mnuItemText) { pActionBlock }
+
+      // Mutate component
+      if (mne.hasNext) pComp.mnemonic = Key.withName((mne.next.last).toUpper.toString)
+      pComp.icon = pIcon
+      pComp.action.accelerator = pAccelerator
     }
 
-  def mutateTextNmeIcon(
-    pComp: AbstractButton,
-    pActionTitleResourceText: String,
-    pActionBlock: => Unit = {},
-    pAccelerator: Option[javax.swing.KeyStroke] = None,
-    pIcon: javax.swing.Icon = EmptyIcon) {
-
-    // The mnemonic parser
-    var ampFlag = false
-    var mne: Option[Char] = None
-    pComp.action = Action(t(pActionTitleResourceText).filter(
-      (c: Char) => { // The ampersand filter evaluator
-        val isStringText = (c != AMPERSAND) || ampFlag // The last term is for && (escape)
-        if (ampFlag) {
-          if (c != AMPERSAND) mne = Some(c)
-          ampFlag = false // destructive assignment
-        } else ampFlag = (c == AMPERSAND)
-        isStringText
-      } //menuMne.sifter(_))
-      )) { pActionBlock }
-    // Mutate component
-    if (!mne.isEmpty) pComp.mnemonic = Key.withName((mne.get).toUpper.toString)
-    pComp.icon = pIcon
-    pComp.action.accelerator = pAccelerator
-  }
-
-  def menuBar = new MenuBar {
-
-    tooltip = "Menubar tooltip text"
     // File menu
-    private val mnuSaveItem = {
-      menuItemFactory("mnuSaveItem.text", {},
-        Some(KeyStroke.getKeyStroke(KeyEvent.VK_S, TilesSolverW.shortcutKeyMask)),
-        EmptyIcon)
-    }
-    private val mnuSaveAsItem = {
-      menuItemFactory("mnuSaveAsItem.text", {}, None, EmptyIcon)
-    }
-
     contents += new Menu("") {
-      mutateTextNmeIcon(this, "File")
-      tooltip = "Tooltip text"
+      mutateTextNmeIcon(this, "&File")
+      tooltip = "File Tooltip text"
 
-      contents.append(mnuSaveItem, mnuSaveAsItem, new Separator,
-        new Separator, /*mnuResetGameItem,*/
+      contents.append(
+        menuItemFactory(t("&New"), { changeInput(Nil) },
+          Some(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutKeyMask))),
+        menuItemFactory(t("mnuSaveItem.text"), {},
+          Some(KeyStroke.getKeyStroke(KeyEvent.VK_S, shortcutKeyMask))),
+        menuItemFactory(t("mnuSaveAsItem.text"), {}),
+        new Separator,
         menuItemFactory(
-          "exitMenuItem.text",
+          s"${t("E&xit")} $applicationShort",
           { sys.exit }, None /*,
           new ImageIcon(getClass.getResource(('/' + RESOURCEPATH + "images/px-16gnome_application_exit.png")))*/ ))
     }
 
     // Edit menu
     contents += new Menu("") {
-      mutateTextNmeIcon(this, "Edit")
-      //      contents.append(OXO_ViewMenu.mnuUndoItem, OXO_ViewMenu.mnuRedoItem, OXO_ViewMenu.mnuClearBoardItem)
+      mutateTextNmeIcon(this, "&Edit")
     }
 
     // View menu
     contents += new Menu("") {
-      mutateTextNmeIcon(this, "View")
+      mutateTextNmeIcon(this, "&View")
+    }
 
+    import Directions._
+    // Tiles menu
+    contents += new Menu("") {
+      mutateTextNmeIcon(this, "&Tiles")
+      contents.append(
+        menuItemFactory(t("Asse&gnazione originale di Fabio"), {
+          changeInput(List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E),
+            Tile(W, S), Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C)))
+        },
+          Some(KeyStroke.getKeyStroke(KeyEvent.VK_1, shortcutKeyMask))))
     }
 
     // Window menu
-    contents += new Menu("") {
-      mutateTextNmeIcon(this, "Window")
-    }
-    /*      val mnuShowToolBar = new CheckMenuItem("")
+    contents += new Menu("") { mutateTextNmeIcon(this, "&Window") }
+
+    /*val mnuShowToolBar = new CheckMenuItem("")
       mutateTextNmeIcon(mnuShowToolBar,
         "showToolBar.Action.text",
         { OXO_View.toolBar.visible = mnuShowToolBar.selected },
         Some(KeyStroke.getKeyStroke(KeyEvent.VK_T, OXO_GUI.shortcutKeyMask)))
       contents += mnuShowToolBar
       mnuShowToolBar.selected = true
-    }
-*/
+    }*/
+
     // Help Menu
     contents += new Menu("") {
-      mutateTextNmeIcon(this, "Help")
+      mutateTextNmeIcon(this, "&Help")
 
       contents += menuItemFactory(
-        "showHelpBox.Action.text",
-        {},
-        Some(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)))
+        t("showHelpBox.Action.text"), {}, Some(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)))
 
-      contents += menuItemFactory(
-        "About",
-        new ViewAboutBox,
-        None)
+      contents += menuItemFactory(t("&About"), new ViewAboutBox)
     }
+    tooltip = "Menubar tooltip text"
   } // def menuBar
 }

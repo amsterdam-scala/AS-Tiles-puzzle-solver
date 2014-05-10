@@ -6,7 +6,7 @@ import scala.swing.Swing.EmptyIcon
 
 class ViewAboutBox extends Dialog {
 
-  title = ("title") // NOI18N
+  title = ("About") // NOI18N
   modal = true
   //resizable = false
 
