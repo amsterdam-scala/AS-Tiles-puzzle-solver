@@ -7,7 +7,6 @@ import scala.swing.{ ScrollPane, SimpleSwingApplication, TextArea, event }
 import javax.swing.ImageIcon
 
 object TilesSolverW extends SimpleSwingApplication {
-  val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
 
   def applicationTitle = "Tiles Puzzle Solver"
   def applicationShort = "Tiles solver"
@@ -30,7 +29,6 @@ object TilesSolverW extends SimpleSwingApplication {
   object lblStatusField extends Label {
     text = ViewMenu.t("statusMessageLabel.text")
     horizontalAlignment = scala.swing.Alignment.Left
-//    this.preferredSize = new Dimension(180, 16)
   }
 
   def ui(toolbar: Option[Component] = None) = new BorderPanel() {
@@ -38,8 +36,20 @@ object TilesSolverW extends SimpleSwingApplication {
     val given = new TextArea(5, 20) { editable = false }
     val output = new TextArea(5, 20) { editable = false }
 
-    def outputGrid(toDraw: Map[(Int, Int), Tile]): GridPanel = {
+    def procesSituation(givenTiles: TilesToUse) {
+      val solution = TilesSolver.findChains(givenTiles)
+      val longestLen = solution.foldLeft(0)(_ max _.size)
+      val oneOfTheSolutions =
+        Tessellation.toDim(solution.filter(_.length >= longestLen).headOption.getOrElse(Nil))
 
+      output.text_=(oneOfTheSolutions.mkString("\n"))
+      if (!oneOfTheSolutions.isEmpty) {
+        mainPanel.contents(3).visible = false // This does the trick of redraw the outputGrid
+        mainPanel.contents(3) = outputGrid(oneOfTheSolutions)
+      }
+    }
+
+    def outputGrid(toDraw: Map[(Int, Int), Tile]): GridPanel = {
       val extremes = Tessellation.computeExtremes(toDraw) // Compute the extremes, Most Top Left and the Most Bottom Right
       val (min, max) = (extremes._1, extremes._2)
 
@@ -56,50 +66,35 @@ object TilesSolverW extends SimpleSwingApplication {
       }
     }
 
-    def buttonsSeq = {
+    def buttonsSeq = for {
+      x <- Directions.values.view
+      y <- Directions.values.view
+    } yield new Button {
+      def butFingerprint(x: Directi, y: Directi) = {
+        val ret = if (x == y) (None, blancImg)
+        else (Option(Tile(x, y)), getImage(Tile(x, y)))
+        tooltip = ret._1.getOrElse(None).toString()
+        icon = ret._2
+        ret._1 // Return tile
+      } // def butFingerprint
 
-      for {
-        x <- Directions.values.view
-        y <- Directions.values.view
-      } yield new Button {
-        def butFingerprint(x: Directi, y: Directi) = {
-          val ret =
-            if (x == y) (None, blancImg)
-            else (Option(Tile(x, y)), getImage(Tile(x, y)))
-          tooltip = ret._1.getOrElse(None).toString()
-          icon = ret._2
-          ret._1
-        } // def butFingerprint
+      contentAreaFilled = true
+      background = Color.GRAY
 
-        contentAreaFilled = true
-        background = Color.GRAY
+      minimumSize = dim
+      preferredSize = minimumSize
+      maximumSize = minimumSize
 
-        minimumSize = dim
-        preferredSize = minimumSize
-        maximumSize = minimumSize
-
-        val tile = butFingerprint(x.asInstanceOf[Directi], y.asInstanceOf[Directi])
-        listenTo(mouse.clicks)
-        reactions += {
-          case me: event.MouseClicked => {
-
-            if (tile.isDefined) givenTiles ++= List(tile.get)
-            given.text = s"$givenTiles\n"
-
-            val solution = TilesSolver.findChains(givenTiles)
-            val longestLen = solution.foldLeft(0)(_ max _.size)
-            val oneOfTheSolutions = Tessellation.toDim(solution.filter(_.length >= longestLen).headOption.getOrElse(Nil))
-
-            output.text_=(oneOfTheSolutions.mkString("\n"))
-            if (!oneOfTheSolutions.isEmpty) {
-              mainPanel.contents(3).visible = false // This does the trick of redraw the outputGrid
-              mainPanel.contents.remove(3)
-              mainPanel.contents += outputGrid(oneOfTheSolutions)
-            }
-          } // event.MouseClicked
-        }
-      } // for yield
-    } // def buttonsSeq 
+      val tile = butFingerprint(x.asInstanceOf[Directi], y.asInstanceOf[Directi])
+      listenTo(mouse.clicks)
+      reactions += {
+        case click: event.MouseClicked if tile.isDefined => {
+          givenTiles ++= List(tile.get)
+          given.text = s"$givenTiles\n"
+          procesSituation(givenTiles)
+        } // event.MouseClicked
+      }
+    } // for yield & def buttonsSeq 
 
     def tileBoard: Component =
       new GridPanel(Directions.values.size, Directions.values.size) { contents ++= buttonsSeq }

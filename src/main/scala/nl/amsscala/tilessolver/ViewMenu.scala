@@ -1,25 +1,19 @@
 package nl.amsscala.tilessolver
 
 import java.awt.event.KeyEvent
-import javax.swing.KeyStroke
+import java.awt.Toolkit
+import javax.swing.{ ImageIcon, KeyStroke }
 
-import scala.swing.MenuBar
-import scala.swing.Menu
-import scala.swing.AbstractButton
-import scala.swing.CheckMenuItem
-import scala.swing.Action
-import scala.swing.event.Key
+import scala.swing.{ AbstractButton, Action, Menu, MenuBar }
+import scala.swing.{ MenuItem, Separator }
 import scala.swing.Swing.EmptyIcon
-import scala.swing.Separator
-import scala.swing.MenuItem
-import javax.swing.KeyStroke
+import scala.swing.event.Key
 
-import TilesSolverW.shortcutKeyMask
-import TilesSolverW.changeInput
 import TilesSolverW.applicationShort
+import TilesSolverW.changeInput
 
 object ViewMenu {
-  private val AMPERSAND = '&'
+  val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
 
   def t(key: String) = key // Placeholder for resource manager
 
@@ -77,8 +71,8 @@ object ViewMenu {
         new Separator,
         menuItemFactory(
           s"${t("E&xit")} $applicationShort",
-          { sys.exit }, None /*,
-          new ImageIcon(getClass.getResource(('/' + RESOURCEPATH + "images/px-16gnome_application_exit.png")))*/ ))
+          { sys.exit }, None,
+          new ImageIcon(getClass.getResource("/resources/px-16gnome_application_exit.png"))))
     }
 
     // Edit menu
