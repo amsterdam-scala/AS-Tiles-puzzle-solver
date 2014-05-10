@@ -8,8 +8,8 @@ import scala.collection.parallel.immutable.ParSeq
 /** @author A'dam Scala Tiles-puzzle-solver team */
 
 class TilesSolverSuite extends FunSpec with GivenWhenThen {
-  import TilesSolver._
-  import Direction._
+  //  import TilesSolver._
+  import Directions._
 
   val cases = ParSeq(Nil,
     List(Tile(W, C)),
