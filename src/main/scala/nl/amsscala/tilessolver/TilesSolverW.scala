@@ -116,6 +116,7 @@ object TilesSolverW extends SimpleSwingApplication {
 
   def top = new MainFrame {
     title = applicationTitle
+    iconImage = toolkit.getImage(getClass.getResource("/resources/px-32ams-scala.png"))
     menuBar = ViewMenu.menuBar
     contents = ui()
     centerOnScreen

@@ -3,6 +3,7 @@ package nl.amsscala.tilessolver
 import scala.swing.{ Action, Alignment, BorderPanel, Button, Dialog }
 import scala.swing.{ GridBagPanel, Label, Swing }
 import scala.swing.Swing.EmptyIcon
+import javax.swing.ImageIcon
 
 class ViewAboutBox extends Dialog {
 
@@ -15,7 +16,7 @@ class ViewAboutBox extends Dialog {
 
     layout(new GridBagPanel {
       private val gbc = new Constraints {
-        fill = scala.swing.GridBagPanel.Fill.Horizontal
+        //fill = scala.swing.GridBagPanel.Fill.Horizontal
         gridheight = 6
         ipadx = 12
         grid = (0, 0)
@@ -30,13 +31,14 @@ class ViewAboutBox extends Dialog {
         font = (font.deriveFont(font.getStyle() | java.awt.Font.BOLD, font.getSize() + 4));
         //name = ("appTitleLabel") // NOI18N
       }, gbc)
-
+      
+      /*
       gbc.grid = (1, 1)
       add(new Label("Dedicated to Fabio, who cannot find friends outside the Scala Meetup group :-)", EmptyIcon, Alignment.Left) {
         //name = ("appDescLabel") // NOI18N
       }, gbc)
 
-      /*      gbc.grid = (1, 2)
+      gbc.grid = (1, 2)
       add(new Label("versionLabel.text", EmptyIcon, Alignment.Left) {
         font = (font.deriveFont(font.getStyle() | java.awt.Font.BOLD));
         //name = ("versionLabel") // NOI18N
@@ -47,28 +49,30 @@ class ViewAboutBox extends Dialog {
         font = (font.deriveFont(font.getStyle() | java.awt.Font.BOLD))
         //name = ("vendorLabel") // NOI18N
       }, gbc)
+      */
 
-      gbc.grid = (1, 4)
-      add(new Label("homepageLabel.text", EmptyIcon, Alignment.Left) {
-        font = (font.deriveFont(font.getStyle() | java.awt.Font.BOLD))
+      gbc.grid = (1, 5)
+      add(new Label("Dedicated to Fabio, who cannot find friends outside the Scala Meetup group :-)", EmptyIcon, Alignment.Left) {
+        //font = (font.deriveFont(font.getStyle() | java.awt.Font.BOLD))
         //name = ("homepageLabel") // NOI18N
       }, gbc)
 
-      gbc.grid = (2, 2)
-      add(new Label("Application.version", EmptyIcon, Alignment.Left) {
+      gbc.grid = (2, 0)
+      add(new Label("",
+        new ImageIcon(getClass.getResource("/resources/px128ams-scala.png")), Alignment.Trailing) {
         //name = ("appVersionLabel") // NOI18N
       }, gbc)
-
+      /*
       gbc.grid = (2, 3)
       add(new Label("Application.vendor", EmptyIcon, Alignment.Left) {
         //name = ("appVendorLabel") // NOI18N
       }, gbc)
-
+*/
       gbc.grid = (2, 4)
-      add(new Label("Application.homepage", EmptyIcon, Alignment.Left) {
+      add(new Label("Scala Amsterdam", EmptyIcon, Alignment.Left) {
         //name = ("appHomepageLabel") // NOI18N
       }, gbc)
-*/
+
       gbc.grid = (2, 5)
       gbc.fill = scala.swing.GridBagPanel.Fill.None
       add(new Button(Action("Close about Box") { dispose() }), gbc)
