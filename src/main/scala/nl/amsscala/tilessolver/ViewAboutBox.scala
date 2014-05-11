@@ -31,7 +31,7 @@ class ViewAboutBox extends Dialog {
         font = (font.deriveFont(font.getStyle() | java.awt.Font.BOLD, font.getSize() + 4));
         //name = ("appTitleLabel") // NOI18N
       }, gbc)
-      
+
       /*
       gbc.grid = (1, 1)
       add(new Label("Dedicated to Fabio, who cannot find friends outside the Scala Meetup group :-)", EmptyIcon, Alignment.Left) {

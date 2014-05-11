@@ -46,6 +46,16 @@ package object tilessolver {
        *  The function return true if the ending side meets a legal terminating side.
        */
       def isJoinable(adjacent: Directi) = (this != C) && adjacent == allowedAdjacent
+
+      def step(ori: (Int, Int)) = {
+        this match {
+          case N => (ori._1, ori._2 - 1) // Northward
+          case E => (ori._1 + 1, ori._2) // Eastward
+          case S => (ori._1, ori._2 + 1) // Southward
+          case W => (ori._1 - 1, ori._2) // Westward
+          case _ => (ori._1, ori._2) // stationary
+        }
+      }
     }
     //    type Directions = Directi
     /** Side names of Tiles */

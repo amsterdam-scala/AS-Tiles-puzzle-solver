@@ -40,7 +40,7 @@ object TilesSolverW extends SimpleSwingApplication {
       val solution = TilesSolver.findChains(givenTiles)
       val longestLen = solution.foldLeft(0)(_ max _.size)
       val oneOfTheSolutions =
-        Tessellation.toDim(solution.filter(_.length >= longestLen).headOption.getOrElse(Nil))
+        Tessellation.placeTiles(solution.filter(_.length >= longestLen).headOption.getOrElse(Nil))
 
       output.text_=(oneOfTheSolutions.mkString("\n"))
       if (!oneOfTheSolutions.isEmpty) {
