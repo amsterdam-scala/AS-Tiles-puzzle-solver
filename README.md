@@ -12,7 +12,7 @@ This program solves the puzzle described by the image below.
 
 ## Tiles
 
-On a tile there is a directed path which can described as an incoming or start-side and an outgoing or end-size. Each has two of this side which are named to the cardinal directions. The four directions are denoted with *N, E, S, W* with the shorthand of the four cardinal directions. If a tile is a beginning (no incoming connection) or an ending (no outgoing connection) then it is denoted with *C* (for beginning respectively ending in the center aka middle).
+On a tile there is a directed path which can described as an incoming or start-side and an outgoing or end-side. Each has two of this side which are named to the cardinal directions. The four directions are denoted with *N, E, S, W* with the shorthand of the four cardinal directions. If a tile is a beginning (no incoming connection) or an ending (no outgoing connection) then it is denoted with *C* (for beginning respectively ending in the center aka middle).
 
 ## Tile Relationships
 

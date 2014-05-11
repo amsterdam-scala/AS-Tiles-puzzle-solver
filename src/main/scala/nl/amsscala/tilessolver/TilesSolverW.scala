@@ -40,7 +40,7 @@ object TilesSolverW extends SimpleSwingApplication {
       val solution = TilesSolver.findChains(givenTiles)
       val longestLen = solution.foldLeft(0)(_ max _.size)
       val oneOfTheSolutions =
-        Tessellation.placeTiles(solution.filter(_.length >= longestLen).headOption.getOrElse(Nil))
+        TilesSolver.placeTiles(solution.filter(_.length >= longestLen).headOption.getOrElse(Nil))
 
       output.text_=(oneOfTheSolutions.mkString("\n"))
       if (!oneOfTheSolutions.isEmpty) {
@@ -50,7 +50,7 @@ object TilesSolverW extends SimpleSwingApplication {
     }
 
     def outputGrid(toDraw: Map[(Int, Int), Tile]): GridPanel = {
-      val extremes = Tessellation.computeExtremes(toDraw) // Compute the extremes, Most Top Left and the Most Bottom Right
+      val extremes = TilesSolver.computeExtremes(toDraw) // Compute the extremes, Most Top Left and the Most Bottom Right
       val (min, max) = (extremes._1, extremes._2)
 
       new GridPanel(1 + max._2 - min._2, 1 + max._1 - min._1) {
