@@ -6,8 +6,7 @@ This program solves the puzzle described by the image below.
 
 # The Puzzle Rules
 
-![puzzle](https://github.com/amsterdam-scala/AS-Tiles-puzzle-solver/blob/master/artwork/DrawnTilesRules.png)
-
+![puzzle](https://raw.githubusercontent.com/amsterdam-scala/AS-Tiles-puzzle-solver/master/artwork/DrawnTilesRules.png)
 
 # The Model
 
