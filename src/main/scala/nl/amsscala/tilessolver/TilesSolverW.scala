@@ -58,10 +58,10 @@ object TilesSolverW extends SimpleSwingApplication {
 
       new GridPanel(1 + max._2 - min._2, 1 + max._1 - min._1) {
         contents ++= {
-          for (
-            y <- min._2 to max._2;
+          for {
+            y <- min._2 to max._2
             x <- min._1 to max._1
-          ) yield new Label {
+          } yield new Label {
             val tile = toDraw.get((x, y))
             icon = if (tile.isDefined) getImage(tile.get) else blancImg
           }
@@ -119,7 +119,7 @@ object TilesSolverW extends SimpleSwingApplication {
 
   def top = new MainFrame {
     title = applicationTitle
-    iconImage = toolkit.getImage(getClass.getResource("/resources/px-32ams-scala.png"))
+    iconImage = toolkit.getImage(getClass.getResource("resources/px-32ams-scala.png"))
     menuBar = ViewMenu.menuBar
     contents = ui()
     centerOnScreen

@@ -59,7 +59,7 @@ class ViewAboutBox extends Dialog {
 
       gbc.grid = (2, 0)
       add(new Label("",
-        new ImageIcon(getClass.getResource("/resources/px128ams-scala.png")), Alignment.Trailing) {
+        new ImageIcon(getClass.getResource("resources/px128ams-scala.png")), Alignment.Trailing) {
         //name = ("appVersionLabel") // NOI18N
       }, gbc)
       /*
