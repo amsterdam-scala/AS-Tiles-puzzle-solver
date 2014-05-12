@@ -7,10 +7,10 @@ object TilesSolver extends App {
    *  the direction after each tile is known. After a tile a step is made in one
    *  of the 4 directions, this result in a increment/decrement in x or either y.
    */
-  def placeTiles(chain: Chain): Map[(Int, Int), Tile] =
+  def placeTiles(chain: Chain) =
     chain.tail.scanLeft[((Int, Int), Tile), List[((Int, Int), Tile)]](((0, 0), chain.head)) {
       (resultingTuple, currentTile) => (resultingTuple._2.end.step(resultingTuple._1), currentTile)
-    }.toMap // TODO "Escher’s Effect by toMap"
+    }
 
   /** Compute the extremes, Least Top Left and the Most Bottom Right in one go */
   def computeExtremes(toDraw: Map[(Int, Int), Tile]) =

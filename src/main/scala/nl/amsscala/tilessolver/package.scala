@@ -9,13 +9,13 @@ package nl.amsscala
  *  and `Chain` is a sequential `List[Tile]`
  *  so `Set[Chain] = Set[List[Tile]]`
  *  The first element of a `Chain` holds the start tile and
- *  the element the ending tile.
+ *  the last element the ending tile.
  *
  *  Theoretically the outcome should be:
  *
  *  `Set[List[Chain]]` a.k.a. `Set[List[List[Tile]]]`
- *  because out the leftover tiles eventually
- *  more coexisting chain(s) could be found.
+ *  because with the leftover tiles more coexisting
+ *  chain(s) could be found, eventually duplicates.
  *  e.g. `Set(List(List(Tile(C,E),Tile(W,C)),
  *                List(Tile(C,E),Tile(W,C))))`
  *

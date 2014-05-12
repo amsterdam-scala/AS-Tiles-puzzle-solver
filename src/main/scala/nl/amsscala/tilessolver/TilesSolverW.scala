@@ -39,13 +39,16 @@ object TilesSolverW extends SimpleSwingApplication {
     def procesSituation(givenTiles: TilesToUse) {
       val solution = TilesSolver.findChains(givenTiles)
       val longestLen = solution.foldLeft(0)(_ max _.size)
-      val oneOfTheSolutions =
-        TilesSolver.placeTiles(solution.filter(_.length >= longestLen).headOption.getOrElse(Nil))
+      if (longestLen != 0) {
 
-      output.text_=(oneOfTheSolutions.mkString("\n"))
-      if (!oneOfTheSolutions.isEmpty) {
+        val oneOfTheSolutions =
+          TilesSolver.placeTiles(solution.filter(_.length >= longestLen).head)
+
+        output.text_=(oneOfTheSolutions.mkString("\n"))
+
         mainPanel.contents(3).visible = false // This does the trick of redraw the outputGrid
-        mainPanel.contents(3) = outputGrid(oneOfTheSolutions)
+        mainPanel.contents(3) = outputGrid(oneOfTheSolutions.toMap // TODO "Escher’s Effect by toMap"
+        )
       }
     }
 
