@@ -25,7 +25,7 @@ package nl.amsscala
  */
 
 package object tilessolver {
-  /** A sequential List of a valid combination of tiles.*/
+  /** A sequential List of a valid combination of tiles expresses a candidate solution.*/
   type Chain = List[Tile]
   /** An unordered list of tiles.*/
   type TilesToUse = Chain
@@ -33,7 +33,7 @@ package object tilessolver {
   /** Enumeration of the connection side of a tile*/
   object Directions extends Enumeration {
     case class Directi() extends Val {
-      /** Returns allowed tile side chain-joint*/
+      /** Returns allowed tile side chain-joint.*/
       def allowedAdjacent =
         this match {
           case N => S
@@ -57,7 +57,7 @@ package object tilessolver {
         }
       }
     }
-    //    type Directions = Directi
+    type Directions = Directi
     /** Side names of Tiles */
     val C, N, E, S, W = Directi() // Center, North, East, South ...
   } // object Directions

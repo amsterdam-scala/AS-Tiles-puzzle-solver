@@ -10,24 +10,22 @@ import scala.swing.Swing.EmptyIcon
 import scala.swing.event.Key
 
 import TilesSolverW.applicationShort
-import TilesSolverW.changeInput
 
 object ViewMenu {
   val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
 
   def t(key: String) = key // Placeholder for resource manager
 
-  protected[tilessolver] def menuBar = new MenuBar {
+  protected[tilessolver] def menuBar = new MenuBar with ModelTilesSolver {
     private def menuItemFactory(
       pActionTitleResourceText: String,
       pActionBlock: => Unit,
       pAccelerator: Option[KeyStroke] = None,
-      pIcon: javax.swing.Icon = EmptyIcon): MenuItem =
-      {
-        val comp = new MenuItem("")
-        mutateTextNmeIcon(comp, pActionTitleResourceText, pActionBlock, pAccelerator, pIcon)
-        comp
-      }
+      pIcon: javax.swing.Icon = EmptyIcon): MenuItem = {
+      val comp = new MenuItem("")
+      mutateTextNmeIcon(comp, pActionTitleResourceText, pActionBlock, pAccelerator, pIcon)
+      comp
+    }
 
     private def mutateTextNmeIcon(
       pComp: AbstractButton,
@@ -87,7 +85,7 @@ object ViewMenu {
 
     import Directions._
     // Tiles menu
-    contents += new Menu("") {
+    contents += new Menu("") with ModelTilesSolver {
       mutateTextNmeIcon(this, "&Tiles")
       contents.append(
         menuItemFactory(t("Asse&gnazione originale di Fabio"), {
