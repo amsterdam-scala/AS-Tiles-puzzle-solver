@@ -16,7 +16,7 @@ object ViewMenu {
 
   def t(key: String) = key // Placeholder for resource manager
 
-  protected[tilessolver] def menuBar = new MenuBar with ModelTilesSolver {
+  protected[tilessolver] def menuBar = new MenuBar {
     private def menuItemFactory(
       pActionTitleResourceText: String,
       pActionBlock: => Unit,
@@ -61,7 +61,7 @@ object ViewMenu {
       tooltip = "File Tooltip text"
 
       contents.append(
-        menuItemFactory(t("&New"), { changeInput(Nil) },
+        menuItemFactory(t("&New"), { TilesSolverW.changeInput(Nil) },
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutKeyMask))),
         menuItemFactory(t("mnuSaveItem.text"), {},
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_S, shortcutKeyMask))),
@@ -85,11 +85,11 @@ object ViewMenu {
 
     import Directions._
     // Tiles menu
-    contents += new Menu("") with ModelTilesSolver {
+    contents += new Menu("") {
       mutateTextNmeIcon(this, "&Tiles")
       contents.append(
         menuItemFactory(t("Asse&gnazione originale di Fabio"), {
-          changeInput(List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E),
+          TilesSolverW.changeInput(List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E),
             Tile(W, S), Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C)))
         },
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_1, shortcutKeyMask)), new ImageIcon(getClass.getResource("resources/px-20ticofab.png"))))
