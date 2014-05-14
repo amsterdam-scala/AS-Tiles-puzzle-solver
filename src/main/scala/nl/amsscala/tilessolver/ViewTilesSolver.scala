@@ -11,21 +11,21 @@ import javax.swing.ImageIcon
 
 trait ViewTilesSolver extends SimpleSwingApplication {
 
-  def applicationTitle = "Tiles Puzzle Solver"
-  def applicationShort = "Tiles solver"
+  val applicationTitle = "Tiles Puzzle Solver"
+  val applicationShort = "Tiles solver"
 
   def getImage(tile: Tile) = {
     new ImageIcon(resourceFromClassloader(s"resources/Tile${tile.start}${tile.end}.png"))
   }
 
   object lblStatusField extends Label {
-    text = ViewMenu.t("statusMessageLabel.text")
+    text = ViewMenu.t("Compose a set of tiles by clicking on the tile pad.")
     horizontalAlignment = scala.swing.Alignment.Left
   }
 
   def ui(toolbar: Option[Component] = None) = new BorderPanel() {
 
-    private val statusBar = new FlowPanel(FlowPanel.Alignment.Leading)(lblStatusField)
+    def statusBar = new FlowPanel(FlowPanel.Alignment.Leading)(lblStatusField)
 
     ///////////////////////// Start of ui //////////////////////////////////////
 

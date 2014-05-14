@@ -5,6 +5,7 @@ import java.awt.Dimension
 import scala.swing.{ BoxPanel, Button, Component, event, GridPanel, Label }
 import scala.swing.{ Orientation, ScrollPane, SimpleSwingApplication, TextArea }
 import javax.swing.ImageIcon
+import java.awt.Cursor
 
 object TilesSolverW extends ViewTilesSolver {
   val blancImg = new ImageIcon(resourceFromClassloader("resources/TileXX.png"))
@@ -15,15 +16,18 @@ object TilesSolverW extends ViewTilesSolver {
 
   def changeInput(tiles: TilesToUse) {
     givenTiles_ = tiles
+    given.text = s"${givenTiles.mkString("\n")}"
+    mainPanel.cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
     procesSituation(givenTiles)
+    mainPanel.cursor = Cursor.getDefaultCursor()
   }
 
   val given = new TextArea(5, 20) { editable = false }
   val output = new TextArea(5, 20) { editable = false }
-  val mainPanel = new BoxPanel(Orientation.Vertical) {
+  val mainPanel = new BoxPanel(Orientation.Horizontal) {
     contents += tileBoard
-    contents += new ScrollPane(given)
-    contents += new ScrollPane(output)
+    contents += new ScrollPane(given) { horizontalScrollBarPolicy = scala.swing.ScrollPane.BarPolicy.Never }
+    contents += new ScrollPane(output) { horizontalScrollBarPolicy = scala.swing.ScrollPane.BarPolicy.Never }
     contents += new BoxPanel(Orientation.Vertical)
   }
 
@@ -54,8 +58,6 @@ object TilesSolverW extends ViewTilesSolver {
         reactions += {
           case click: event.MouseClicked if tile.isDefined => {
             changeInput(givenTiles ++ List(tile.get))
-            given.text = s"$givenTiles\n"
-
           } // event.MouseClicked
         }
       } // for yield & def buttonsSeq 
@@ -64,11 +66,9 @@ object TilesSolverW extends ViewTilesSolver {
     } // def tileBoard
 
   def procesSituation(givenTiles: TilesToUse) {
-    val solution = TilesSolver.findChains(givenTiles)
-    val longestLen = solution.foldLeft(0)(_ max _.size)
-
-    def outputGrid(toDraw: Map[(Int, Int), Tile]): GridPanel = {
-      val extremes = TilesSolver.computeExtremes(toDraw) // Compute the extremes, Most Top Left and the Most Bottom Right
+    def placeTilesInGrid(toDraw: Map[(Int, Int), Tile]): GridPanel = {
+      // Compute the extremes, Most Top Left and the Most Bottom Right
+      val extremes = TilesSolver.computeExtremes(toDraw)
       val (min, max) = (extremes._1, extremes._2)
 
       new GridPanel(1 + max._2 - min._2, 1 + max._1 - min._1) {
@@ -80,22 +80,29 @@ object TilesSolverW extends ViewTilesSolver {
           icon = if (tile.isDefined) getImage(tile.get) else blancImg
         })
       }
-    } // def outputGrid
+    } // def placeTilesInGrid
+
+    val solution = TilesSolver.findChains(givenTiles)
+
+    val longestLen = solution.foldLeft(0)(_ max _.size)
+    val longestSol = solution.filter(_.length >= longestLen)
+
+    ViewMenu.viewMenu.enabled = longestSol.size > 1
+    ViewMenu.buildViewMenu(longestSol.size)
+
+    val oneOfTheVirtualTileLayouts =
+      if (longestLen == 0) Nil else TilesSolver.placeTiles(longestSol.head)
+    val oneOfTheRealTileLayouts = oneOfTheVirtualTileLayouts.toMap
+    val overlaps = longestLen - oneOfTheRealTileLayouts.size
+
+    lblStatusField.text =
+      s"Found ${solution.size} solution(s), ${longestSol.size} are the longest, all ${longestLen} long, overlaps: $overlaps."
 
     mainPanel.contents(3).visible = false // This does the trick of redraw the outputGrid
-    mainPanel.contents(3) = if (longestLen != 0) {
-
-      val oneOfTheSolutions =
-        TilesSolver.placeTiles(solution.filter(_.length >= longestLen).head)
-
-      output.text = (oneOfTheSolutions.mkString("\n"))
-
-      outputGrid(oneOfTheSolutions.toMap // TODO "Escher’s Effect by toMap"
-      )
-    } else {
-      output.text = ""
-      new BoxPanel(Orientation.Vertical)
-    }
+    mainPanel.contents(3) =
+      if (longestLen != 0) {
+        output.text = (oneOfTheRealTileLayouts.mkString("\n"))
+        placeTilesInGrid(oneOfTheRealTileLayouts)
+      } else { output.text = ""; new BoxPanel(Orientation.Vertical) /*Clear text box*/ }
   }
-
 } // Object ViewTilesSolver
