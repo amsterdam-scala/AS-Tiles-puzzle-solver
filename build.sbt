@@ -4,9 +4,9 @@ organization := "nl.amsscala"
 
 scalaVersion :="2.10.4"
 
-EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
+// EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
 
-EclipseKeys.withSource := true
+// EclipseKeys.withSource := true
 
 libraryDependencies ++= {
   	Seq(
