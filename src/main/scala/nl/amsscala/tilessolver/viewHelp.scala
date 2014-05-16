@@ -1,30 +1,24 @@
-package nl.amsscala.tilessolver
+package nl.amsscala
+package tilessolver
 
 import scala.swing.{ Action, Alignment, BorderPanel, Button, Dialog }
 import scala.swing.{ GridBagPanel, Label, Swing }
 import scala.swing.Swing.EmptyIcon
 import javax.swing.ImageIcon
+import scala.swing.Window
 
 class ViewHelp extends Dialog {
 
-  title = ("Help") // NOI18N
+  title = (s"Help - ${TilesSolverW.applicationShort}")
 
   resizable = false
+  this.peer.setIconImage(toolkit.getImage(getClass.getResource("resources/px-32ams-scala.png")))
 
   contents = new BorderPanel {
-    //border = Swing.EmptyBorder(20, 20, 20, 20)
-
     layout(new GridBagPanel {
-
       add(new Label("",
-        new ImageIcon(getClass.getResource("resources/TilesRules.png")), Alignment.Center) {
-        //name = ("appVersionLabel") // NOI18N
-      }, new Constraints {
-        //fill = scala.swing.GridBagPanel.Fill.Horizontal
-        gridheight = 6
-        ipadx = 12
-        grid = (0, 0)
-      })
+        new ImageIcon(getClass.getResource("resources/TilesRules.png")), Alignment.Center) {},
+        new Constraints { grid = (0, 0) })
     }) = BorderPanel.Position.Center
   }
 
@@ -34,7 +28,7 @@ class ViewHelp extends Dialog {
 
 class ViewAboutBox extends Dialog {
 
-  title = ("About") // NOI18N
+  title = s"About ${TilesSolverW.applicationShort}"
   modal = true
   resizable = false
 

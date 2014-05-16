@@ -1,12 +1,8 @@
-package nl.amsscala.tilessolver
+package nl.amsscala
+package tilessolver
 
-import scala.swing.BorderPanel
-import scala.swing.Component
-import scala.swing.FlowPanel
-import scala.swing.GridPanel
-import scala.swing.Label
-import scala.swing.MainFrame
-import scala.swing.SimpleSwingApplication
+import scala.swing.{ BorderPanel, Component, FlowPanel, Label }
+import scala.swing.{ MainFrame, SimpleSwingApplication }
 import javax.swing.ImageIcon
 
 trait ViewTilesSolver extends SimpleSwingApplication {
@@ -14,7 +10,7 @@ trait ViewTilesSolver extends SimpleSwingApplication {
   val applicationTitle = "Tiles Puzzle Solver"
   val applicationShort = "Tiles solver"
 
-  def getImage(tile: Tile) = {
+  def getTileImage(tile: Tile) = {
     new ImageIcon(resourceFromClassloader(s"resources/Tile${tile.start}${tile.end}.png"))
   }
 
@@ -23,7 +19,7 @@ trait ViewTilesSolver extends SimpleSwingApplication {
     horizontalAlignment = scala.swing.Alignment.Left
   }
 
-  def ui(toolbar: Option[Component] = None) = new BorderPanel() {
+  private def ui(toolbar: Option[Component] = None) = new BorderPanel() {
 
     def statusBar = new FlowPanel(FlowPanel.Alignment.Leading)(lblStatusField)
 
@@ -34,11 +30,12 @@ trait ViewTilesSolver extends SimpleSwingApplication {
     layout(statusBar) = BorderPanel.Position.South
   } // def ui
 
-  def top = new MainFrame {
+  def top() = new MainFrame {
     title = applicationTitle
     iconImage = toolkit.getImage(getClass.getResource("resources/px-32ams-scala.png"))
     menuBar = ViewMenu.menuBar
     contents = ui()
     centerOnScreen
   }
+
 } // trait ViewTilesSolver

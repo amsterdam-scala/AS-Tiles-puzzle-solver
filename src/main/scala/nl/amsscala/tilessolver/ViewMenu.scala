@@ -1,4 +1,5 @@
-package nl.amsscala.tilessolver
+package nl.amsscala
+package tilessolver
 
 import java.awt.event.KeyEvent
 import java.awt.Toolkit
@@ -10,7 +11,7 @@ import scala.swing.Swing.EmptyIcon
 import scala.swing.event.Key
 
 object ViewMenu {
-  val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+  private val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
 
   def t(key: String) = key // Placeholder for resource manager
 
@@ -52,7 +53,7 @@ object ViewMenu {
     comp
   }
 
-  val solutionsMenu = new Menu("") {
+  private val solutionsMenu = new Menu("") {
     mutateTextNmeIcon(this, "&Solutions")
     enabled = false
   }
@@ -61,19 +62,27 @@ object ViewMenu {
                          longestLen: Int,
                          nAllLongestSolutions: Int,
                          solutions: Set[Chain]) = {
-    solutionsMenu.enabled = solutions.size > 0
+    solutionsMenu.enabled = solutions.size > 1
     solutionsMenu.contents.clear
     solutionsMenu.contents ++=
-      (for (elem <- solutions) yield {
-        menuItemFactory(t(s"Solution &${elem}"),
+      (for (elem <- solutions.zipWithIndex) yield {
+        menuItemFactory(t(s"Solution &${elem._2 + 1}"),
           {
-            TilesSolverW.displaySelected(nSolution, longestLen, nAllLongestSolutions,
-              TilesSolver.computeTilesIn2D(elem).toMap)
+            TilesSolverW.displaySelected(nSolution,
+              longestLen,
+              nAllLongestSolutions,
+              TilesSolver.computeTilesIn2D(elem._1).toMap)
           })
       })
+
+    TilesSolverW.displaySelected(nSolution,
+      longestLen,
+      nAllLongestSolutions,
+      TilesSolver.computeTilesIn2D(solutions.headOption.getOrElse(Nil)).toMap)
+
   }
 
-  def menuBar = new MenuBar {
+  def menuBar: MenuBar = new MenuBar {
     // File menu
     contents += new Menu("") {
       mutateTextNmeIcon(this, "&File")
@@ -109,12 +118,11 @@ object ViewMenu {
     contents += new Menu("") {
       mutateTextNmeIcon(this, "&Tiles")
       contents.append(menuItemFactory(t("Asse&gnazione originale di Fabio"),
-        TilesSolverW.changeInput(List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E),
-          Tile(W, S), Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C))),
+        TilesSolverW.changeInput(TilesSolver.fabioPhoto),
         Some(KeyStroke.getKeyStroke(KeyEvent.VK_1, shortcutKeyMask)) //
         , //
         new ImageIcon(getClass.getResource("resources/px-20ticofab.png"))),
-        menuItemFactory(t("D&isappeared tiles due overlaps"),
+        menuItemFactory(t("&Missing tiles due to overlaps"),
           TilesSolverW.changeInput(List(Tile(C, E), Tile(W, S), Tile(N, W), Tile(E, N), Tile(S, C))),
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))))
     }

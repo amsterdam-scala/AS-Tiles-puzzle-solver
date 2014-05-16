@@ -2,10 +2,11 @@ name  :="AS Tiles puzzle solver"
 
 organization := "nl.amsscala"
 
+version := "0.0"
+
 scalaVersion :="2.10.4"
 
 // EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
-
 // EclipseKeys.withSource := true
 
 libraryDependencies ++= {
