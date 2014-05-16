@@ -11,4 +11,4 @@ notifications:
       - vdenberg+Travis@gmail.com
 jdk:
   - oraclejdk8
-  - openjdk8
+  - openjdk7

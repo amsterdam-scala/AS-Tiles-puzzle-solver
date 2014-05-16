@@ -119,7 +119,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
 
     info("The last tests are permutations so are processor intensive. 4 or more minutes.")
 
-/*     it("should every time the same lists of chains, thus be stable") {
+    /*     it("should every time the same lists of chains, thus be stable") {
       Given("the modified example of the site all permutations (1.814.400)")
       cases(17).permutations.foreach(casus => assert(TilesSolver.findChains(casus) ===
         Set(

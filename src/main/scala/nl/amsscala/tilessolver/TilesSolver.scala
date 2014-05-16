@@ -1,19 +1,19 @@
 package nl.amsscala
 package tilessolver
 
-object TilesSolver extends App {
+object TilesSolver {
 
   /** Compute the placement of tiles in a grid. Every tile has a direction, so
    *  the direction after each tile is known. After a tile a step is made in one
    *  of the 4 directions, this result in a increment/decrement in x or either y.
    */
-  def placeTiles(chain: Chain) =
+  def computeTilesIn2D(chain: Chain) =
     chain.tail.scanLeft[((Int, Int), Tile), List[((Int, Int), Tile)]](((0, 0), chain.head)) {
       (resultingTuple, currentTile) => (resultingTuple._2.end.step(resultingTuple._1), currentTile)
     }
 
   /** Compute the extremes, Least Top Left and the Most Bottom Right in one go */
-  def computeExtremes(toDraw: Map[(Int, Int), Tile]) =
+  def computeExtremes(toDraw: Map[(Int, Int), Tile]): ((Int, Int), (Int, Int)) =
     toDraw.keys.tail.foldLeft[((Int, Int), (Int, Int))]((toDraw.keys.head, toDraw.keys.head)) {
       (a, tileCoord) =>
         ((a._1._1 min tileCoord._1, a._1._2 min tileCoord._2), // The LTL part of resulting tuple
@@ -90,15 +90,4 @@ object TilesSolver extends App {
     List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(W, S),
       Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C))
 
-  println(s"Given\n$fabioPhoto")
-
-  private val solution = findChains(fabioPhoto) // The example in the read.me
-
-  private val longestLen = solution.foldLeft(0)(_ max _.size)
-
-  println(
-    s"Number of unique chains: ${solution.size}, longest: $longestLen tiles, longest solution(s):")
-
-  // One or more chains could be a valid outcome
-  println(solution.filter(_.length >= longestLen).mkString("\n"))
 }

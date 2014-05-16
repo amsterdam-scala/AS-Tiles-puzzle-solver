@@ -68,16 +68,19 @@ object TilesSolverW extends ViewTilesSolver {
       contents ++= buttonsSeq
     } // def tileBoard
 
-  def procesSituation(givenTiles: TilesToUse) {
+  def displaySelected(solutions: Int,
+                      longestLen: Int,
+                      nAllLongestSolutions: Int,
+                      tiles2d: Map[(Int, Int), Tile]) {
+    /** Place tiles in a grid */
     def placeTilesInGrid(toDraw: Map[(Int, Int), Tile]): GridPanel = {
       // Compute the extremes, Most Top Left and the Most Bottom Right
-      val extremes = TilesSolver.computeExtremes(toDraw)
-      val (min, max) = (extremes._1, extremes._2)
+      val (mostTopLeft, mostBottomRight) = TilesSolver.computeExtremes(toDraw)
 
-      new GridPanel(1 + max._2 - min._2, 1 + max._1 - min._1) {
+      new GridPanel(1 + mostBottomRight._2 - mostTopLeft._2, 1 + mostBottomRight._1 - mostTopLeft._1) {
         contents ++= (for {
-          y <- min._2 to max._2
-          x <- min._1 to max._1
+          y <- mostTopLeft._2 to mostBottomRight._2
+          x <- mostTopLeft._1 to mostBottomRight._1
         } yield new Label {
           val tile = toDraw.get((x, y))
           icon = if (tile.isDefined) getImage(tile.get) else blancImg
@@ -85,27 +88,32 @@ object TilesSolverW extends ViewTilesSolver {
       }
     } // def placeTilesInGrid
 
-    val solution = TilesSolver.findChains(givenTiles)
-
-    val longestLen = solution.foldLeft(0)(_ max _.size)
-    val longestSol = solution.filter(_.length >= longestLen)
-
-    ViewMenu.solutionsMenu.enabled = longestSol.size > 1
-    ViewMenu.buildSolutionsMenu(longestSol.size)
-
-    val oneOfTheVirtualTileLayouts =
-      if (longestLen == 0) Nil else TilesSolver.placeTiles(longestSol.head)
-    val oneOfTheRealTileLayouts = oneOfTheVirtualTileLayouts.toMap
-    val overlaps = longestLen - oneOfTheRealTileLayouts.size
-
+    val overlaps = longestLen - tiles2d.size
     lblStatusField.text =
-      s"Found ${solution.size} solution(s), ${longestSol.size} are the longest, all ${longestLen} long, overlaps: $overlaps."
+      s"Found ${solutions} solution(s), ${nAllLongestSolutions} are the longest, all ${longestLen} long, overlaps: $overlaps."
 
     mainPanel.contents(4).visible = false // This does the trick of redraw the outputGrid
     mainPanel.contents(4) =
       if (longestLen != 0) {
-        output.text = (oneOfTheRealTileLayouts.mkString("\n"))
-        placeTilesInGrid(oneOfTheRealTileLayouts)
+        output.text = (tiles2d.mkString("\n"))
+        placeTilesInGrid(tiles2d)
       } else { output.text = ""; new BoxPanel(Orientation.Vertical) /*Clear text box*/ }
   }
+
+  def procesSituation(givenTiles: TilesToUse) {
+
+    ////////////////////////////// procesSituation /////////////////////////////
+    val solution = TilesSolver.findChains(givenTiles)
+    val longestLen = solution.foldLeft(0)(_ max _.size)
+    // Get the longest paths
+    val allLongestSolutions = solution.filter(_.length >= longestLen)
+
+    ViewMenu.buildSolutionsMenu(solution.size, longestLen, allLongestSolutions.size, allLongestSolutions)
+
+    //    val oneOfTheVirtualTileLayouts =
+    //     if (longestLen == 0) Nil else TilesSolver.computeTilesIn2D(allLongestSolutions.head)
+    //
+    //    displaySelected(solution.size, longestLen, allLongestSolutions.size, oneOfTheVirtualTileLayouts.toMap)
+
+  } // def procesSituation
 } // Object ViewTilesSolver

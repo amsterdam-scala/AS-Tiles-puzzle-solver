@@ -57,11 +57,20 @@ object ViewMenu {
     enabled = false
   }
 
-  def buildSolutionsMenu(nMenuItems: Int) = {
-
+  def buildSolutionsMenu(nSolution: Int,
+                         longestLen: Int,
+                         nAllLongestSolutions: Int,
+                         solutions: Set[Chain]) = {
+    solutionsMenu.enabled = solutions.size > 0
     solutionsMenu.contents.clear
     solutionsMenu.contents ++=
-      (for (n <- 1 to nMenuItems) yield { menuItemFactory(t(s"Solution &${n}"), { println(n) }) })
+      (for (elem <- solutions) yield {
+        menuItemFactory(t(s"Solution &${elem}"),
+          {
+            TilesSolverW.displaySelected(nSolution, longestLen, nAllLongestSolutions,
+              TilesSolver.computeTilesIn2D(elem).toMap)
+          })
+      })
   }
 
   def menuBar = new MenuBar {
