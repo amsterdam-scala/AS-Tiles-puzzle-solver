@@ -67,19 +67,16 @@ object ViewMenu {
     solutionsMenu.contents ++=
       (for (elem <- solutions.zipWithIndex) yield {
         menuItemFactory(t(s"Solution &${elem._2 + 1}"),
-          {
-            TilesSolverW.displaySelected(nSolution,
-              longestLen,
-              nAllLongestSolutions,
-              TilesSolver.computeTilesIn2D(elem._1).toMap)
-          })
+          TilesSolverW.displaySelected(nSolution,
+            longestLen,
+            nAllLongestSolutions,
+            TilesSolver.computeTilesIn2D(elem._1)))
       })
 
     TilesSolverW.displaySelected(nSolution,
       longestLen,
       nAllLongestSolutions,
-      TilesSolver.computeTilesIn2D(solutions.headOption.getOrElse(Nil)).toMap)
-
+      TilesSolver.computeTilesIn2D(solutions.headOption.getOrElse(Nil)))
   }
 
   def menuBar: MenuBar = new MenuBar {
@@ -123,7 +120,7 @@ object ViewMenu {
         , //
         new ImageIcon(getClass.getResource("resources/px-20ticofab.png"))),
         menuItemFactory(t("&Missing tiles due to overlaps"),
-          TilesSolverW.changeInput(List(Tile(C, E), Tile(W, S), Tile(N, W), Tile(E, N), Tile(S, C))),
+          TilesSolverW.changeInput(List(Tile(C, E), Tile(N, S), Tile(S, N), Tile(W, S), Tile(N, W), Tile(E, N), Tile(S, C))),
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))))
     }
 

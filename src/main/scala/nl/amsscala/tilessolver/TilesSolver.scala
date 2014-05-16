@@ -1,16 +1,17 @@
 package nl.amsscala
 package tilessolver
 
+/** Core code with reference to Tessellation. */
 object TilesSolver {
 
   /** Compute the placement of tiles in a grid. Every tile has a direction, so
    *  the direction after each tile is known. After a tile a step is made in one
    *  of the 4 directions, this result in a increment/decrement in x or either y.
    */
-  def computeTilesIn2D(chain: Chain) = if (chain.isEmpty) Nil else
+  def computeTilesIn2D(chain: Chain) = (if (chain.isEmpty) Nil else
     chain.tail.scanLeft[((Int, Int), Tile), List[((Int, Int), Tile)]](((0, 0), chain.head)) {
       (resultingTuple, currentTile) => (resultingTuple._2.end.step(resultingTuple._1), currentTile)
-    }
+    }).toMap
 
   /** Compute the extremes, Least Top Left and the Most Bottom Right in one go */
   def computeExtremes(toDraw: Map[(Int, Int), Tile]): ((Int, Int), (Int, Int)) =
@@ -22,8 +23,8 @@ object TilesSolver {
 
   import Directions.{ C, N, E, S, W }
 
-  /** Returns a set of possible chains starting
-   *  and ending with a start and ending tile.
+  /** Returns a set of possible chains starting and ending with a start and ending tile.
+   *  @param	tiles: TilesToUse List of tile which have to combined.
    */
   def findChains(tiles: TilesToUse): Set[Chain] = {
     /** Available tiles to combine with. */
@@ -31,10 +32,10 @@ object TilesSolver {
 
     /** Intermediate results to store and handle
      *
-     *  @constructor	Create a store of 3 List of Tiles
-     *  @param	candidates: TilesToUse	Comparative objects B
-     *  @param	onHand: TilesToUse Actual unused tiles
-     *  @param	outHand: Chain	Actual promising combinations in progress
+     *  @constructor	Create a store of 3 List of Tiles.
+     *  @param	candidates: TilesToUse	Comparative objects B.
+     *  @param	onHand: TilesToUse Actual unused tiles.
+     *  @param	outHand: Chain	Actual promising combinations in progress.
      */
     case class AssetHandling(val candidates: TilesToUse = tilesNotEndingInTheMiddle,
                              onHand: TilesToUse = tilesNotEndingInTheMiddle,
@@ -86,6 +87,7 @@ object TilesSolver {
       maintainedChains = Set.empty)
   } // def findChains(
 
+  /** Original given tiles as published on a photo. */
   val fabioPhoto =
     List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(W, S),
       Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C))

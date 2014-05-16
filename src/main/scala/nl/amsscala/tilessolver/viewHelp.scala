@@ -5,9 +5,8 @@ import scala.swing.{ Action, Alignment, BorderPanel, Button, Dialog }
 import scala.swing.{ GridBagPanel, Label, Swing }
 import scala.swing.Swing.EmptyIcon
 import javax.swing.ImageIcon
-import scala.swing.Window
 
-class ViewHelp extends Dialog {
+protected class ViewHelp extends Dialog {
 
   title = (s"Help - ${TilesSolverW.applicationShort}")
 
@@ -26,7 +25,7 @@ class ViewHelp extends Dialog {
   open()
 }
 
-class ViewAboutBox extends Dialog {
+protected class ViewAboutBox extends Dialog {
 
   title = s"About ${TilesSolverW.applicationShort}"
   modal = true

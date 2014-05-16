@@ -20,11 +20,15 @@ object TilesSolverW extends ViewTilesSolver {
     mainPanel.cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
     lblStatusField.text = s"Computing for ${givenTiles_.size} tiles ..."
     ////////////////////////////// procesSituation /////////////////////////////
-    val solution = TilesSolver.findChains(givenTiles)
+    val solution1 = TilesSolver.findChains(givenTiles)
+
+    val solution = solution1 /*.filter(p => (p.size == TilesSolver.computeTilesIn2D(p).size))*/
 
     val longestLen = solution.foldLeft(0)(_ max _.size)
     // Get the longest paths
     val allLongestSolutions = solution.filter(_.length >= longestLen)
+
+    middle.text = allLongestSolutions.headOption.getOrElse(Nil).mkString("\n")
 
     ViewMenu.buildSolutionsMenu(solution.size, longestLen, allLongestSolutions.size, allLongestSolutions)
 
@@ -93,7 +97,8 @@ object TilesSolverW extends ViewTilesSolver {
           x <- mostTopLeft._1 to mostBottomRight._1
         } yield new Label {
           val tile = toDraw.get((x, y))
-          icon = if (tile.isDefined) getTileImage(tile.get) else blancImg
+          icon = if (tile.isDefined) { tooltip = tile.get.toString(); getTileImage(tile.get) }
+          else blancImg
         })
       }
     } // def placeTilesInGrid
@@ -106,8 +111,7 @@ object TilesSolverW extends ViewTilesSolver {
 
     mainPanel.contents(4) =
       if (longestLen != 0) {
-        //middle.text = 
-        // TODO output.text = tiles2d.mkString("\n")
+        output.text = tiles2d.mkString("\n")
         placeTilesInGrid(tiles2d)
       } else { output.text = ""; new BoxPanel(Orientation.Vertical) /*Clear text box*/ }
   }
