@@ -18,15 +18,18 @@ object TilesSolverW extends ViewTilesSolver {
     givenTiles_ = tiles
     given.text = s"${givenTiles.mkString("\n")}"
     mainPanel.cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
+    lblStatusField.text = s"Computing for ${givenTiles_.size} tiles ..."
     procesSituation(givenTiles)
     mainPanel.cursor = Cursor.getDefaultCursor()
   }
 
-  val given = new TextArea(5, 20) { editable = false }
-  val output = new TextArea(5, 20) { editable = false }
+  val given = new TextArea("Given tiles", 14, 10) { editable = false }
+  val middle = new TextArea("Combination", 14, 10) { editable = false }
+  val output = new TextArea("Tessellation", 14, 16) { editable = false }
   val mainPanel = new BoxPanel(Orientation.Horizontal) {
     contents += tileBoard
     contents += new ScrollPane(given) { horizontalScrollBarPolicy = scala.swing.ScrollPane.BarPolicy.Never }
+    contents += new ScrollPane(middle) { horizontalScrollBarPolicy = scala.swing.ScrollPane.BarPolicy.Never }
     contents += new ScrollPane(output) { horizontalScrollBarPolicy = scala.swing.ScrollPane.BarPolicy.Never }
     contents += new BoxPanel(Orientation.Vertical)
   }
@@ -87,8 +90,8 @@ object TilesSolverW extends ViewTilesSolver {
     val longestLen = solution.foldLeft(0)(_ max _.size)
     val longestSol = solution.filter(_.length >= longestLen)
 
-    ViewMenu.viewMenu.enabled = longestSol.size > 1
-    ViewMenu.buildViewMenu(longestSol.size)
+    ViewMenu.solutionsMenu.enabled = longestSol.size > 1
+    ViewMenu.buildSolutionsMenu(longestSol.size)
 
     val oneOfTheVirtualTileLayouts =
       if (longestLen == 0) Nil else TilesSolver.placeTiles(longestSol.head)
@@ -98,8 +101,8 @@ object TilesSolverW extends ViewTilesSolver {
     lblStatusField.text =
       s"Found ${solution.size} solution(s), ${longestSol.size} are the longest, all ${longestLen} long, overlaps: $overlaps."
 
-    mainPanel.contents(3).visible = false // This does the trick of redraw the outputGrid
-    mainPanel.contents(3) =
+    mainPanel.contents(4).visible = false // This does the trick of redraw the outputGrid
+    mainPanel.contents(4) =
       if (longestLen != 0) {
         output.text = (oneOfTheRealTileLayouts.mkString("\n"))
         placeTilesInGrid(oneOfTheRealTileLayouts)

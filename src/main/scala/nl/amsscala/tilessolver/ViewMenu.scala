@@ -52,15 +52,16 @@ object ViewMenu {
     comp
   }
 
-  val viewMenu = new Menu("") {
-    mutateTextNmeIcon(this, "&View")
+  val solutionsMenu = new Menu("") {
+    mutateTextNmeIcon(this, "&Solutions")
     enabled = false
   }
 
-  def buildViewMenu(nMenuItems: Int) {
-    for (n <- 0 to nMenuItems) {
+  def buildSolutionsMenu(nMenuItems: Int) = {
 
-    }
+    solutionsMenu.contents.clear
+    solutionsMenu.contents ++=
+      (for (n <- 1 to nMenuItems) yield { menuItemFactory(t(s"Solution &${n}"), { println(n) }) })
   }
 
   def menuBar = new MenuBar {
@@ -89,7 +90,10 @@ object ViewMenu {
     }
 
     // View menu
-    contents += viewMenu
+    contents += new Menu("") {
+      mutateTextNmeIcon(this, "&View")
+      enabled = false
+    }
 
     import Directions._
     // Tiles menu
@@ -105,6 +109,9 @@ object ViewMenu {
           TilesSolverW.changeInput(List(Tile(C, E), Tile(W, S), Tile(N, W), Tile(E, N), Tile(S, C))),
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))))
     }
+
+    // Solutions menu
+    contents += solutionsMenu
 
     // Window menu
     contents += new Menu("") { mutateTextNmeIcon(this, "&Window"); enabled = false }
@@ -123,7 +130,7 @@ object ViewMenu {
       mutateTextNmeIcon(this, "&Help")
 
       contents += menuItemFactory(
-        t("showHelpBox.Action.text"), {}, Some(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)))
+        t("Show &help"), { new ViewHelp }, Some(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)))
 
       contents += menuItemFactory(t("&About"), new ViewAboutBox)
     }
