@@ -1,14 +1,18 @@
 package nl.amsscala
 package tilessolver
 
-/** Core code with reference to Tessellation. */
+/** Core code or Model. */
 object TilesSolver {
+
+  /** Remove the solutions with double tiles on one place */
+  def filterRealSolutions(rawSolutions: Set[Chain], unFiltered: Boolean) =
+    rawSolutions.filter(p => (unFiltered || p.size == TilesSolver.tileSetter(p).size))
 
   /** Compute the placement of tiles in a grid. Every tile has a direction, so
    *  the direction after each tile is known. After a tile a step is made in one
    *  of the 4 directions, this result in a increment/decrement in x or either y.
    */
-  def computeTilesIn2D(chain: Chain) = (if (chain.isEmpty) Nil else
+  def tileSetter(chain: Chain): Map[(Int, Int), Tile] = (if (chain.isEmpty) Nil else
     chain.tail.scanLeft[((Int, Int), Tile), List[((Int, Int), Tile)]](((0, 0), chain.head)) {
       (resultingTuple, currentTile) => (resultingTuple._2.end.step(resultingTuple._1), currentTile)
     }).toMap
@@ -28,7 +32,7 @@ object TilesSolver {
    */
   def findChains(tiles: TilesToUse): Set[Chain] = {
     /** Available tiles to combine with. */
-    val tilesNotEndingInTheMiddle = tiles.filter(_.end != C)
+    val tilesNotEndingInTheMiddle = tiles.filterNot(_.end == C)
 
     /** Intermediate results to store and handle
      *

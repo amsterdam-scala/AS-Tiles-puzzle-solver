@@ -62,7 +62,7 @@ package object tilessolver {
     val C, N, E, S, W = Directi() // Center, North, East, South ...
   } // object Directions
 
-  import Directions._
+  import Directions.Directi
 
   /** Descriptor for a tile, direction indicated with a arrow
    *  @param	start The from or incoming of tile (tail of arrow)

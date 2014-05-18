@@ -4,18 +4,16 @@ package tilessolver
 import java.awt.event.KeyEvent
 import java.awt.Toolkit
 import javax.swing.{ ImageIcon, KeyStroke }
-
-import scala.swing.{ AbstractButton, Action, Menu, MenuBar }
+import scala.swing.{ AbstractButton, Action, CheckBox, Menu, MenuBar }
 import scala.swing.{ MenuItem, Separator }
-import scala.swing.Swing.EmptyIcon
+import scala.swing.Swing.{ EmptyIcon, HGlue }
 import scala.swing.event.Key
 
-object ViewMenu {
-  private val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+trait MenuUtils {
 
-  def t(key: String) = key // Placeholder for resource manager
+  def t(key: String): String
 
-  private def mutateTextNmeIcon(
+  def mutateTextNmeIcon(
     pComp: AbstractButton,
     pActionTitleResourceText: String,
     pActionBlock: => Unit = {},
@@ -43,20 +41,31 @@ object ViewMenu {
     pComp.action.accelerator = pAccelerator
   }
 
-  private def menuItemFactory(
+  def menuItemFactory(
     pActionTitleResourceText: String,
     pActionBlock: => Unit,
     pAccelerator: Option[KeyStroke] = None,
     pIcon: javax.swing.Icon = EmptyIcon): MenuItem = {
-    val comp = new MenuItem("")
-    mutateTextNmeIcon(comp, pActionTitleResourceText, pActionBlock, pAccelerator, pIcon)
-    comp
+    new MenuItem("") { mutateTextNmeIcon(this, pActionTitleResourceText, pActionBlock, pAccelerator, pIcon) }
   }
+
+  /*  case class MenuEx() extends AbstractButton{
+    def apply = new Menu("") 
+  }
+*/
+} // trait MenuUtils
+
+object ViewMenu extends MenuUtils {
+  private val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+
+  def t(key: String) = key // Placeholder for resource manager
 
   private val solutionsMenu = new Menu("") {
     mutateTextNmeIcon(this, "&Solutions")
     enabled = false
   }
+
+  val chkNoOverlap = new CheckBox() { action = Action("No overlaps") { TilesSolverW.updateMiddle() } }
 
   def buildSolutionsMenu(nSolution: Int,
                          longestLen: Int,
@@ -65,18 +74,18 @@ object ViewMenu {
     solutionsMenu.enabled = solutions.size > 1
     solutionsMenu.contents.clear
     solutionsMenu.contents ++=
-      (for (elem <- solutions.zipWithIndex) yield {
+      (for (elem <- solutions.zipWithIndex.view) yield {
         menuItemFactory(t(s"Solution &${elem._2 + 1}"),
           TilesSolverW.displaySelected(nSolution,
             longestLen,
             nAllLongestSolutions,
-            TilesSolver.computeTilesIn2D(elem._1)))
+            elem._1))
       })
 
     TilesSolverW.displaySelected(nSolution,
       longestLen,
       nAllLongestSolutions,
-      TilesSolver.computeTilesIn2D(solutions.headOption.getOrElse(Nil)))
+      solutions.headOption.getOrElse(Nil))
   }
 
   def menuBar: MenuBar = new MenuBar {
@@ -90,7 +99,8 @@ object ViewMenu {
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutKeyMask))),
         menuItemFactory(t("mnuSaveItem.text"), {},
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_S, shortcutKeyMask))),
-        menuItemFactory(t("mnuSaveAsItem.text"), {}),
+        new Separator,
+        menuItemFactory(t("&Print"), {}, Some(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutKeyMask))),
         new Separator,
         menuItemFactory(
           s"${t("E&xit")} ${TilesSolverW.applicationShort}",
@@ -110,7 +120,7 @@ object ViewMenu {
       enabled = false
     }
 
-    import Directions._
+    import Directions.{ C, N, E, S, W }
     // Tiles menu
     contents += new Menu("") {
       mutateTextNmeIcon(this, "&Tiles")
@@ -121,23 +131,22 @@ object ViewMenu {
         new ImageIcon(getClass.getResource("resources/px-20ticofab.png"))),
         menuItemFactory(t("&Missing tiles due to overlaps"),
           TilesSolverW.changeInput(List(Tile(C, E), Tile(N, S), Tile(S, N), Tile(W, S), Tile(N, W), Tile(E, N), Tile(S, C))),
+          Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))),
+        menuItemFactory(t("&Modified example"),
+          TilesSolverW.changeInput(List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(E, S), // Modified example
+            Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C))),
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))))
     }
 
     // Solutions menu
     contents += solutionsMenu
 
+    contents += chkNoOverlap
+
+    contents += HGlue
+
     // Window menu
     contents += new Menu("") { mutateTextNmeIcon(this, "&Window"); enabled = false }
-
-    /*val mnuShowToolBar = new CheckMenuItem("")
-      mutateTextNmeIcon(mnuShowToolBar,
-        "showToolBar.Action.text",
-        { OXO_View.toolBar.visible = mnuShowToolBar.selected },
-        Some(KeyStroke.getKeyStroke(KeyEvent.VK_T, OXO_GUI.shortcutKeyMask)))
-      contents += mnuShowToolBar
-      mnuShowToolBar.selected = true
-    }*/
 
     // Help Menu
     contents += new Menu("") {
@@ -148,6 +157,5 @@ object ViewMenu {
 
       contents += menuItemFactory(t("&About"), new ViewAboutBox)
     }
-    tooltip = "Menubar tooltip text"
   } // def menuBar
 }
