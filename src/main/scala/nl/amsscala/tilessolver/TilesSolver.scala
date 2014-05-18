@@ -6,19 +6,22 @@ object TilesSolver {
 
   /** Remove the solutions with double tiles on one place */
   def filterRealSolutions(rawSolutions: Set[Chain], unFiltered: Boolean) =
-    rawSolutions.filter(p => (unFiltered || p.size == TilesSolver.tileSetter(p).size))
+    rawSolutions.filter(p => (unFiltered || p.size == TilesSolver.layoutTiles(p).size))
 
   /** Compute the placement of tiles in a grid. Every tile has a direction, so
    *  the direction after each tile is known. After a tile a step is made in one
    *  of the 4 directions, this result in a increment/decrement in x or either y.
+   *  
+   *  A serial number is added for later sorting.
    */
-  def tileSetter(chain: Chain): Map[(Int, Int), Tile] = (if (chain.isEmpty) Nil else
-    chain.tail.scanLeft[((Int, Int), Tile), List[((Int, Int), Tile)]](((0, 0), chain.head)) {
-      (resultingTuple, currentTile) => (resultingTuple._2.end.step(resultingTuple._1), currentTile)
+  def layoutTiles(chain: Chain): Map[(Int, Int), (Tile, Int)] = (if (chain.isEmpty) Nil else
+    chain.tail.scanLeft[((Int, Int), (Tile, Int)), List[((Int, Int), (Tile, Int))]](((0, 0), (chain.head, 0))) {
+      (resultingTuple, (currentTile)) => (((resultingTuple._2._1.end.step(resultingTuple._1))),
+          (currentTile, resultingTuple._2._2 + 1))
     }).toMap
 
   /** Compute the extremes, Least Top Left and the Most Bottom Right in one go */
-  def computeExtremes(toDraw: Map[(Int, Int), Tile]): ((Int, Int), (Int, Int)) =
+  def computeExtremes(toDraw: Map[(Int, Int), (Tile, Int)]): ((Int, Int), (Int, Int)) =
     toDraw.keys.tail.foldLeft[((Int, Int), (Int, Int))]((toDraw.keys.head, toDraw.keys.head)) {
       (a, tileCoord) =>
         ((a._1._1 min tileCoord._1, a._1._2 min tileCoord._2), // The LTL part of resulting tuple

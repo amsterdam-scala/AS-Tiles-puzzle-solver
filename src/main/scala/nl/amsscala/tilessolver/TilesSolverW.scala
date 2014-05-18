@@ -4,13 +4,15 @@ package tilessolver
 import java.awt.{ Cursor, Dimension }
 import java.awt.{ Graphics, Graphics2D }
 import java.awt.print.{ PageFormat, Printable }
-import java.awt.print.Printable.{ NO_SUCH_PAGE, PAGE_EXISTS }
+import java.awt.print.Printable.{ NO_SUCH_PAGE,PAGE_EXISTS }
 import scala.swing.{ BoxPanel, Button, event, GridPanel, Label }
 import scala.swing.{ Orientation, ScrollPane, SimpleSwingApplication, TextArea }
+import scala.swing.Panel
+import scala.swing.Swing.{HGlue,VGlue}
 
 object TilesSolverW extends ViewTilesSolver {
   private val blancImg = new javax.swing.ImageIcon(resourceFromClassloader("resources/TileXX.png"))
-
+      private val dim = new Dimension(42, 42)
   private var givenTiles_ : TilesToUse = Nil
   def givenTiles = givenTiles_
   var rawSolutions: Set[Chain] = _
@@ -112,24 +114,30 @@ object TilesSolverW extends ViewTilesSolver {
                       nAllLongestSolutions: Int,
                       selTiles: Chain) {
 
-    def placeTilesInGrid(toDraw: Map[(Int, Int), Tile]): GridPanel = {
+    def placeTilesInGrid(toDraw: Map[(Int, Int), (Tile, Int)]): Panel = {
       // Compute the extremes, Most Top Left and the Most Bottom Right
       val (mostTopLeft, mostBottomRight) = TilesSolver.computeExtremes(toDraw)
-
-      new GridPanel(1 + mostBottomRight._2 - mostTopLeft._2, 1 + mostBottomRight._1 - mostTopLeft._1) {
-        contents ++= (for {
-          y <- mostTopLeft._2 to mostBottomRight._2
-          x <- mostTopLeft._1 to mostBottomRight._1
-        } yield new Label {
-          val tile = toDraw.get((x, y))
-          icon = if (tile.isDefined) { tooltip = tile.get.toString(); getTileImage(tile.get) }
-          else blancImg
-        })
+      new BoxPanel(Orientation.Vertical) {
+        contents +=
+          new GridPanel(1 + mostBottomRight._2 - mostTopLeft._2, 1 + mostBottomRight._1 - mostTopLeft._1) {
+            contents ++= (for {
+              y <- mostTopLeft._2 to mostBottomRight._2
+              x <- mostTopLeft._1 to mostBottomRight._1
+            } yield new Label {
+                      minimumSize = dim
+        preferredSize = minimumSize
+        maximumSize = minimumSize
+              val tile = toDraw.get((x, y))
+              icon = if (tile.isDefined) { tooltip = tile.get.toString(); getTileImage(tile.get._1) }
+              else blancImg
+            })
+          }       
+        contents ++= List(VGlue)
       }
     } // def placeTilesInGrid
 
     middle.text = selTiles.mkString("\n")
-    val tiles2D = TilesSolver.tileSetter(selTiles)
+    val tiles2D = TilesSolver.layoutTiles(selTiles)
     val overlaps = longestLen - tiles2D.size
 
     lblStatusField.text =
@@ -138,7 +146,7 @@ object TilesSolverW extends ViewTilesSolver {
     mainPanel.contents(4).visible = false // This does the trick of redraw the outputGrid
     mainPanel.contents(4) =
       if (longestLen != 0) {
-        output.text = tiles2D.mkString("\n")
+        output.text = tiles2D.toList.sortBy { x => x._2._2 }.mkString("\n")
         placeTilesInGrid(tiles2D)
       } else { output.text = ""; new BoxPanel(Orientation.Vertical) /*Clear text box*/ }
   }

@@ -65,6 +65,8 @@ object ViewMenu extends MenuUtils {
     enabled = false
   }
 
+  val chkSorted = new CheckBox("Sorted lists") { selected = true }
+
   val chkNoOverlap = new CheckBox() { action = Action("No overlaps") { TilesSolverW.updateMiddle() } }
 
   def buildSolutionsMenu(nSolution: Int,
@@ -117,7 +119,8 @@ object ViewMenu extends MenuUtils {
     // View menu
     contents += new Menu("") {
       mutateTextNmeIcon(this, "&View")
-      enabled = false
+      //enabled = false
+      contents.append(chkSorted)
     }
 
     import Directions.{ C, N, E, S, W }
