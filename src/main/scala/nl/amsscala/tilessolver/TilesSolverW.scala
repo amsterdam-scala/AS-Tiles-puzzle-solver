@@ -4,15 +4,15 @@ package tilessolver
 import java.awt.{ Cursor, Dimension }
 import java.awt.{ Graphics, Graphics2D }
 import java.awt.print.{ PageFormat, Printable }
-import java.awt.print.Printable.{ NO_SUCH_PAGE,PAGE_EXISTS }
+import java.awt.print.Printable.{ NO_SUCH_PAGE, PAGE_EXISTS }
 import scala.swing.{ BoxPanel, Button, event, GridPanel, Label }
 import scala.swing.{ Orientation, ScrollPane, SimpleSwingApplication, TextArea }
 import scala.swing.Panel
-import scala.swing.Swing.{HGlue,VGlue}
+import scala.swing.Swing.VGlue
 
 object TilesSolverW extends ViewTilesSolver {
   private val blancImg = new javax.swing.ImageIcon(resourceFromClassloader("resources/TileXX.png"))
-      private val dim = new Dimension(42, 42)
+  private val dim = new Dimension(42, 42)
   private var givenTiles_ : TilesToUse = Nil
   def givenTiles = givenTiles_
   var rawSolutions: Set[Chain] = _
@@ -124,29 +124,27 @@ object TilesSolverW extends ViewTilesSolver {
               y <- mostTopLeft._2 to mostBottomRight._2
               x <- mostTopLeft._1 to mostBottomRight._1
             } yield new Label {
-                      minimumSize = dim
-        preferredSize = minimumSize
-        maximumSize = minimumSize
+              minimumSize = dim
+              preferredSize = dim
               val tile = toDraw.get((x, y))
               icon = if (tile.isDefined) { tooltip = tile.get.toString(); getTileImage(tile.get._1) }
               else blancImg
             })
-          }       
+          }
         contents ++= List(VGlue)
       }
     } // def placeTilesInGrid
 
     middle.text = selTiles.mkString("\n")
     val tiles2D = TilesSolver.layoutTiles(selTiles)
-    val overlaps = longestLen - tiles2D.size
 
     lblStatusField.text =
-      s"Found ${solutions} solution(s), ${nAllLongestSolutions} are the longest, all ${longestLen} long, overlaps: $overlaps."
+      s"Found ${solutions} solution(s), ${nAllLongestSolutions} are the longest, all ${longestLen} long, overlaps: ${longestLen - tiles2D.size}."
 
     mainPanel.contents(4).visible = false // This does the trick of redraw the outputGrid
     mainPanel.contents(4) =
       if (longestLen != 0) {
-        output.text = tiles2D.toList.sortBy { x => x._2._2 }.mkString("\n")
+        output.text = tiles2D.toList.sortBy { x => x._2._2 }.map(x => s"${x._1} ${x._2._1}").mkString("\n")
         placeTilesInGrid(tiles2D)
       } else { output.text = ""; new BoxPanel(Orientation.Vertical) /*Clear text box*/ }
   }

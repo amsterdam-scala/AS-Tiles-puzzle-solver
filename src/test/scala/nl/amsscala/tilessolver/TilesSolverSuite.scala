@@ -20,7 +20,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
     List(Tile(C, E), Tile(E, C)),
     List(Tile(C, E), Tile(C, E), Tile(E, C)), // 7
     Nil, //List(Tile(C, E), Tile(E, C), Tile(C, E)),
-    Nil, //List(Tile(N, C), Tile(C, S)), // 9
+    List(Tile(N, C), Tile(C, S)), // 9
     Nil, //List(Tile(C, S), Tile(N, C)),
     List(Tile(C, S), Tile(C, S), Tile(N, C)), // 11
     Nil, //List(Tile(C, S), Tile(N, C), Tile(C, S)),
