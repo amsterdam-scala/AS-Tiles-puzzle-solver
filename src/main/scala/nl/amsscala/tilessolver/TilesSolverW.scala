@@ -6,8 +6,7 @@ import java.awt.{ Graphics, Graphics2D }
 import java.awt.print.{ PageFormat, Printable }
 import java.awt.print.Printable.{ NO_SUCH_PAGE, PAGE_EXISTS }
 import scala.swing.{ BoxPanel, Button, event, GridPanel, Label }
-import scala.swing.{ Orientation, ScrollPane, SimpleSwingApplication, TextArea }
-import scala.swing.Panel
+import scala.swing.{ Orientation, Panel, ScrollPane, SimpleSwingApplication, TextArea }
 import scala.swing.Swing.VGlue
 
 object TilesSolverW extends ViewTilesSolver {
@@ -44,9 +43,10 @@ object TilesSolverW extends ViewTilesSolver {
     mainPanel.cursor = Cursor.getDefaultCursor()
   }
 
-  private val given = new TextArea("Given tiles", 14, 10) { editable = false }
-  private val middle = new TextArea("Combination", 14, 10) { editable = false }
-  private val output = new TextArea("Tessellation", 14, 16) { editable = false }
+  private val (given, middle, output) =
+    (new TextArea("Given tiles", 14, 10) { editable = false },
+      new TextArea("Combination", 14, 10) { editable = false },
+      new TextArea("Tessellation", 14, 16) { editable = false })
 
   val mainPanel = new BoxPanel(Orientation.Horizontal) with Printable {
     contents += tileBoard

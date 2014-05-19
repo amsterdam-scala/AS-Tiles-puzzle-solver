@@ -7,15 +7,15 @@ package nl.amsscala
  *  Signature is `findChains(tiles: TilesToUse): Set[Chain]`
  *  where `TilesToUse` is an unordered `List[Tile]` and `Chain` is a sequential `List[Tile]`
  *  so `Set[Chain] = Set[List[Tile]]`
- *  
- *  
+ *
+ *
  *  The first element of a `Chain` holds the start tile and
  *  the last element the ending tile.
  *
  *  If we take the left-overs in account the outcome should be: `Set[List[Chain]]` a.k.a. `Set[List[List[Tile]]]`
- *  
+ *
  *  because with the leftover tiles more coexisting chain(s) could be found, eventually duplicates. E.g.
- *  
+ *
  *  `Set(List(List(Tile(C,E),Tile(W,C)), List(Tile(C,E),Tile(W,C))))`
  *
  *  But this has to be left for a future exercise.

@@ -1,7 +1,7 @@
 package nl.amsscala
 package tilessolver
 
-/** Core code or Model. */
+/** Core code or Model.*/
 object TilesSolver {
 
   /** Remove the solutions with double tiles on one place */
@@ -68,6 +68,7 @@ object TilesSolver {
             // If ending tile save 2 tiles, including the ending one
             assetToTransfer ++ outHand)
         }
+
       // Add conditional a Set with the List of build chain
       def transferLastFoundChain(mainChains: Set[Chain]) =
         if (isCompletedTileChain) mainChains + outHand else mainChains
@@ -84,6 +85,7 @@ object TilesSolver {
           AssetHandling( /*onHand = asset.onHand*/ ),
           asset.transferLastFoundChain(maintainedChains))
       else // Do a matching with each other tile
+        // Split up in a unknown path with skipping current match and a path wit a match
         walk(trail, AssetHandling(asset.candidates.tail, asset.onHand, asset.outHand), maintainedChains
           ++ (if (trail.head.start isJoinable asset.candidates.head.end) // explore further with new found tile
             walk(List(asset.candidates.head), asset.processFoundTile(trail.head), maintainedChains)
