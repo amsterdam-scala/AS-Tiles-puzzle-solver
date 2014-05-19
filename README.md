@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/amsterdam-scala/AS-Tiles-puzzle-solver.svg?branch=master)](https://travis-ci.org/amsterdam-scala/AS-Tiles-puzzle-solver)
 Scala Tiles Puzzle Solver
 =========================
 
