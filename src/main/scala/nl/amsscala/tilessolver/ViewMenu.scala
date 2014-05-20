@@ -67,7 +67,7 @@ object ViewMenu extends MenuUtils {
 
   val chkSorted = new CheckBox("Sorted lists") { selected = true }
 
-  val chkNoOverlap = new CheckBox() { action = Action("No overlaps") { TilesSolverW.updateMiddle() } }
+  val chkNoOverlap = new CheckBox() { action = Action("No overlaps") { TilesSolverApp.updateMiddle() } }
 
   def buildSolutionsMenu(nSolution: Int,
                          longestLen: Int,
@@ -78,13 +78,13 @@ object ViewMenu extends MenuUtils {
     solutionsMenu.contents ++=
       (for (elem <- solutions.zipWithIndex.view) yield {
         menuItemFactory(t(s"Solution &${elem._2 + 1}"),
-          TilesSolverW.displaySelected(nSolution,
+          TilesSolverApp.displaySelected(nSolution,
             longestLen,
             nAllLongestSolutions,
             elem._1))
       })
 
-    TilesSolverW.displaySelected(nSolution,
+    TilesSolverApp.displaySelected(nSolution,
       longestLen,
       nAllLongestSolutions,
       solutions.headOption.getOrElse(Nil))
@@ -97,15 +97,14 @@ object ViewMenu extends MenuUtils {
       tooltip = "File Tooltip text"
 
       contents.append(
-        menuItemFactory(t("&New"), { TilesSolverW.changeInput(Nil) },
+        menuItemFactory(t("&New"), { TilesSolverApp.changeInput(Nil) },
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutKeyMask))),
-        menuItemFactory(t("mnuSaveItem.text"), {},
-          Some(KeyStroke.getKeyStroke(KeyEvent.VK_S, shortcutKeyMask))),
         new Separator,
-        menuItemFactory(t("&Print"), {}, Some(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutKeyMask))),
+        menuItemFactory(t("&Print"), { TilesSolverApp.mainPanel.doPrint },
+          Some(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutKeyMask))),
         new Separator,
         menuItemFactory(
-          s"${t("E&xit")} ${TilesSolverW.applicationShort}",
+          s"${t("E&xit")} ${TilesSolverApp.applicationShort}",
           { sys.exit }, None,
           new ImageIcon(getClass.getResource("/resources/px-16gnome_application_exit.png"))))
     }
@@ -128,17 +127,19 @@ object ViewMenu extends MenuUtils {
     contents += new Menu("") {
       mutateTextNmeIcon(this, "&Tiles")
       contents.append(menuItemFactory(t("Asse&gnazione originale di Fabio"),
-        TilesSolverW.changeInput(TilesSolver.fabioPhoto),
+        TilesSolverApp.changeInput(TilesSolver.fabioPhoto),
         Some(KeyStroke.getKeyStroke(KeyEvent.VK_1, shortcutKeyMask)) //
         , //
         new ImageIcon(getClass.getResource("resources/px-20ticofab.png"))),
         menuItemFactory(t("&Missing tiles due to overlaps"),
-          TilesSolverW.changeInput(List(Tile(C, E), Tile(N, S), Tile(S, N), Tile(W, S), Tile(N, W), Tile(E, N), Tile(S, C))),
+          TilesSolverApp.changeInput(List(Tile(C, E), Tile(N, S), Tile(S, N), Tile(W, S), Tile(N, W), Tile(E, N), Tile(S, C))),
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))),
         menuItemFactory(t("&Modified example"),
-          TilesSolverW.changeInput(List(Tile(S, E), Tile(W, E), Tile(N, C), Tile(C, E), Tile(E, S), // Modified example
-            Tile(C, E), Tile(S, W), Tile(N, E), Tile(N, S), Tile(W, C))),
-          Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))))
+          TilesSolverApp.changeInput(TilesSolver.modifiedExample),
+          Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))),
+        menuItemFactory(t("C&razy example"),
+          TilesSolverApp.changeInput(TilesSolver.crazyExample),
+          Some(KeyStroke.getKeyStroke(KeyEvent.VK_3, shortcutKeyMask))))
     }
 
     // Solutions menu

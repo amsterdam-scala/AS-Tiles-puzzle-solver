@@ -8,7 +8,7 @@ import javax.swing.ImageIcon
 
 protected class ViewHelp extends Dialog {
 
-  title = (s"Help - ${TilesSolverW.applicationShort}")
+  title = (s"Help - ${TilesSolverApp.applicationShort}")
 
   resizable = false
   this.peer.setIconImage(toolkit.getImage(getClass.getResource("resources/px-32ams-scala.png")))
@@ -27,7 +27,7 @@ protected class ViewHelp extends Dialog {
 
 protected class ViewAboutBox extends Dialog {
 
-  title = s"About ${TilesSolverW.applicationShort}"
+  title = s"About ${TilesSolverApp.applicationShort}"
   modal = true
   resizable = false
 
@@ -47,7 +47,7 @@ protected class ViewAboutBox extends Dialog {
       gbc.gridheight = 1
 
       gbc.grid = (1, 0)
-      add(new Label(TilesSolverW.applicationTitle, EmptyIcon, Alignment.Left) {
+      add(new Label(TilesSolverApp.applicationTitle, EmptyIcon, Alignment.Left) {
         font = (font.deriveFont(font.getStyle() | java.awt.Font.BOLD, font.getSize() + 4));
         //name = ("appTitleLabel") // NOI18N
       }, gbc)

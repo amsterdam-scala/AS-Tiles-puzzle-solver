@@ -6,6 +6,7 @@ import scala.swing.{ MainFrame, SimpleSwingApplication }
 import javax.swing.ImageIcon
 
 trait ViewTilesSolver extends SimpleSwingApplication {
+  System.setProperty("apple.laf.useScreenMenuBar", "true")
 
   val applicationTitle = "Tiles Puzzle Solver"
   val applicationShort = "Tiles solver"
@@ -26,7 +27,7 @@ trait ViewTilesSolver extends SimpleSwingApplication {
     ///////////////////////// Start of ui //////////////////////////////////////
 
     if (!toolbar.isEmpty) add(toolbar.get, BorderPanel.Position.North)
-    layout(TilesSolverW.mainPanel) = BorderPanel.Position.Center
+    layout(TilesSolverApp.mainPanel) = BorderPanel.Position.Center
     layout(statusBar) = BorderPanel.Position.South
   } // def ui
 
