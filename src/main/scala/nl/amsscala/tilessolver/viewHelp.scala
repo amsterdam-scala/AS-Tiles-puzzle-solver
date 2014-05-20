@@ -48,7 +48,7 @@ protected class ViewAboutBox extends Dialog {
 
       gbc.grid = (1, 0)
       add(new Label(TilesSolverApp.applicationTitle, EmptyIcon, Alignment.Left) {
-        font = (font.deriveFont(font.getStyle() | java.awt.Font.BOLD, font.getSize() + 4));
+        font = (font.deriveFont(font.getStyle() | java.awt.Font.BOLD, font.getSize() + 4))
         //name = ("appTitleLabel") // NOI18N
       }, gbc)
 

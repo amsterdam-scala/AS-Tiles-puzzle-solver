@@ -65,7 +65,7 @@ object ViewMenu extends MenuUtils {
     enabled = false
   }
 
-  val chkSorted = new CheckBox("Sorted lists") { selected = true }
+  val chkSorted = new CheckBox("Sorted &lists") { selected = true; tooltip = "Nothing fancy to do with this" }
 
   val chkNoOverlap = new CheckBox() { action = Action("No overlaps") { TilesSolverApp.updateMiddle() } }
 

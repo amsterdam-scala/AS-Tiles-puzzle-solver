@@ -164,80 +164,32 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
           List(Tile(C, N), Tile(S, E), Tile(W, E), Tile(W, C))))
     }
 
-    val craziestResult = crazyResult.maxBy(x => x.size - TilesSolver.layoutTiles(x).size)
+    val longestLen = crazyResult.foldLeft(0)(_ max _.size)
+
+    val craziestResult = crazyResult.filter(_.size >= longestLen).maxBy(x => x.size - TilesSolver.layoutTiles(x).size)
+
     it("should give the craziest result with most double used tile positions") {
       Given("craziest result")
-      assert(craziestResult ==
-       List(Tile(C,N), Tile(S,W), Tile(E,S), Tile(N,E), Tile(W,N), Tile(S,E), Tile(W,E), Tile(W,C)))
+      assert(craziestResult ===
+        List(Tile(C, N), Tile(S, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, E), Tile(W, C)))
     }
 
-    /*    val craziestLayout = TilesSolver.layoutTiles(craziestResult)
-    it("should layout the tile for a modified example") {
+    val craziestLayout = TilesSolver.layoutTiles(craziestResult)
+    it("should layout the tile for a craziest result") {
       Given("modified example")
-      assert(tileLayout ==
-        Map((0, 2) -> (Tile(E, N), 4), (0, 0) -> (Tile(S, C), 6), (1, 1) -> (Tile(N, S), 2),
-          (0, 1) -> (Tile(S, N), 5), (1, 2) -> (Tile(N, W), 3), (1, 0) -> (Tile(W, S), 1)))
+      assert(TilesSolver.layoutTiles(craziestResult) ==
+        Map((0, 0) -> (Tile(N, E), 6), (2, 0) -> (Tile(W, C), 8), (1, -2) -> (Tile(S, W), 3),
+          (0, -2) -> (Tile(E, S), 4), (1, -1) -> (Tile(W, N), 2), (1, 0) -> (Tile(W, E), 7),
+          (0, -1) -> (Tile(N, S), 5)))
     }
-*/
-    /*       it("should give a raw crazy complex stack tiles result") {
-      Given("crazy example result")
-      assert(crazyResult ===
-        Set(List(Tile(C, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, C)),
-          List(Tile(C, N), Tile(S, W), Tile(E, S), Tile(N, E), Tile(W, N), Tile(S, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, W), Tile(E, S), Tile(N, C)),
-          List(Tile(C, N), Tile(S, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, C)),
-          List(Tile(C, N), Tile(S, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, E), Tile(W, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, C)),
-          List(Tile(C, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, W), Tile(E, S), Tile(N, E), Tile(W, E), Tile(W, N), Tile(S, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, N), Tile(S, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, C)),
-          List(Tile(C, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, N), Tile(S, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, E), Tile(W, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, C)),
-          List(Tile(C, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, C)),
-          List(Tile(C, N), Tile(S, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, W), Tile(E, S), Tile(N, E), Tile(W, N), Tile(S, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, N), Tile(S, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, C)),
-          List(Tile(C, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, W), Tile(E, S), Tile(N, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, W), Tile(E, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, N), Tile(S, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, E), Tile(W, N), Tile(S, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, E), Tile(W, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, C)),
-          List(Tile(C, N), Tile(S, E), Tile(W, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, C)),
-          List(Tile(C, E), Tile(W, E), Tile(W, N), Tile(S, E), Tile(W, C)),
-          List(Tile(C, N), Tile(S, E), Tile(W, E), Tile(W, C))))
-    }
-*/
-    //    it("should layout the tile for complex stack tiles result") {
-    //      Given("crazy example result")
-    //      assert(TilesSolver.layoutTiles(crazyResult) ===
-    //        Map((0, 0) -> (Tile(C, N), 0), (2, -1) -> (Tile(W, N), 3), (2, 0) -> (Tile(W, C), 8),
-    //          (1, -2) -> (Tile(E, S), 5), (1, -1) -> (Tile(N, S), 6), (1, 0) -> (Tile(N, E), 7),
-    //          (0, -1) -> (Tile(S, E), 1), (2, -2) -> (Tile(S, W), 4)))
-    //    }
-    /*        it("should layout the tile for complex stack tiles result") {
+
+    it("should compute the extreme dimensions for a craziest layout") {
       Given("modified example")
-      assert(TilesSolver.layoutTiles(
-        List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, W), Tile(E, N), Tile(S, N), Tile(S, C))) ==
-        Map((0, 2) -> (Tile(E, N), 4), (0, 0) -> (Tile(S, C), 6), (1, 1) -> (Tile(N, S), 2),
-          (0, 1) -> (Tile(S, N), 5), (1, 2) -> (Tile(N, W), 3), (1, 0) -> (Tile(W, S), 1)))
+      assert(TilesSolver.calculateExtremes(craziestLayout) == ((0, -2), (2, 0)))
     }
-*/
+
+    // TODO Tests with no overlaps
+
   } // describe
 
   describe("The last tests are permutations so are processor intensive. 4 or more minutes.") {

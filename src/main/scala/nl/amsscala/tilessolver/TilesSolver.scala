@@ -78,16 +78,18 @@ object TilesSolver {
    *
    *  A serial number is added for later sorting.
    */
-  def layoutTiles(chain: Chain): Map[(Int, Int), (Tile, Int)] = (if (chain.isEmpty) Nil else
-    chain.tail.scanLeft[((Int, Int), (Tile, Int)), List[((Int, Int), (Tile, Int))]](((0, 0), (chain.head, 0))) {
-      (resultingTuple, (currentTile)) =>
-        (((resultingTuple._2._1.end.step(resultingTuple._1))),
-          (currentTile, resultingTuple._2._2 + 1))
-    }).toMap
+  def layoutTiles(chain: Chain) = virtualLayoutTiles(chain).toMap
+
+  def virtualLayoutTiles(chain: Chain): List[((Int, Int), (Tile, Int))] =
+    if (chain.isEmpty) Nil else
+      chain.tail.scanLeft[((Int, Int), (Tile, Int)), List[((Int, Int), (Tile, Int))]](((0, 0), (chain.head, 0))) {
+        (resultingTuple, (currentTile)) =>
+          (((resultingTuple._2._1.end.step(resultingTuple._1))), (currentTile, resultingTuple._2._2 + 1))
+      }
 
   /** Remove the solutions with double tiles on one place */
   def filterRealSolutions(rawSolutions: Set[Chain], unFiltered: Boolean) =
-    rawSolutions.filter(p => (unFiltered || p.size == TilesSolver.layoutTiles(p).size))
+    rawSolutions.filter(p => (unFiltered || p.lengthCompare(layoutTiles(p).size) <= 0))
 
   /** Compute the extremes, Least Top Left and the Most Bottom Right in one go */
   def calculateExtremes(toDraw: Map[(Int, Int), (Tile, Int)]): ((Int, Int), (Int, Int)) =

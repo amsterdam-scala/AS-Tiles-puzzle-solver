@@ -18,7 +18,7 @@ object TilesSolverApp extends ViewTilesSolver {
   private val dim = new Dimension(42, 42)
   private var givenTiles_ : TilesToUse = Nil
   def givenTiles = givenTiles_
-  var rawSolutions: Set[Chain] = _
+  var rawSolutions: Set[Chain] = Set()
 
   def changeInput(tiles: TilesToUse) {
     givenTiles_ = tiles
@@ -37,9 +37,7 @@ object TilesSolverApp extends ViewTilesSolver {
 
     val longestLen = solutions.foldLeft(0)(_ max _.size)
     // Get the longest paths
-    val allLongestSolutions = solutions.filter(_.length >= longestLen)
-
-    //middle.text = allLongestSolutions.headOption.getOrElse(Nil).mkString("\n")
+    val allLongestSolutions = solutions.filter(_.size >= longestLen)
 
     ViewMenu.buildSolutionsMenu(solutions.size, longestLen, allLongestSolutions.size, allLongestSolutions)
 
@@ -122,7 +120,7 @@ object TilesSolverApp extends ViewTilesSolver {
                       nAllLongestSolutions: Int,
                       selTiles: Chain) {
 
-    def placeTilesInGrid(toDraw: Map[(Int, Int), (Tile, Int)]): Panel = {
+    def placeTilesInGrid(toDraw: Map[(Int, Int), (Tile, Int)], dblure: Set[(Int, Int)]): Panel = {
       // Compute the extremes, Most Top Left and the Most Bottom Right
       val (mostTopLeft, mostBottomRight) = TilesSolver.calculateExtremes(toDraw)
       new BoxPanel(Orientation.Vertical) {
@@ -131,10 +129,14 @@ object TilesSolverApp extends ViewTilesSolver {
             contents ++= (for {
               y <- mostTopLeft._2 to mostBottomRight._2
               x <- mostTopLeft._1 to mostBottomRight._1
-            } yield new Label {
+            } yield new Button {
+              focusable=false
+              this.
               minimumSize = dim
               preferredSize = dim
               val tile = toDraw.get((x, y))
+
+              if (dblure.contains((x, y))) background = java.awt.Color.RED
               icon = if (tile.isDefined) { tooltip = tile.get.toString(); getTileImage(tile.get._1) }
               else blancImg
             })
@@ -144,16 +146,20 @@ object TilesSolverApp extends ViewTilesSolver {
     } // def placeTilesInGrid
 
     middle.text = selTiles.mkString("\n")
-    val tiles2D = TilesSolver.layoutTiles(selTiles)
+
+    val tiles2Draw = TilesSolver.virtualLayoutTiles(selTiles)
+    val tiles2D = tiles2Draw.toMap
+
+    val doublures = TilesSolver.virtualLayoutTiles(selTiles).groupBy(_._1).filter(_._2.lengthCompare(1) > 0).keySet
 
     lblStatusField.text =
-      s"Found ${solutions} solution(s), ${nAllLongestSolutions} are the longest, all ${longestLen} long, overlaps: ${longestLen - tiles2D.size}."
+      s"Found ${solutions} solution(s), ${nAllLongestSolutions} are the longest, all ${longestLen} long, overlaps: ${doublures.size}."
 
     mainPanel.contents(4).visible = false // This does the trick of redraw the outputGrid
     mainPanel.contents(4) =
       if (longestLen != 0) {
-        output.text = tiles2D.toList.sortBy { x => x._2._2 }.map(x => s"${x._1} ${x._2._1}").mkString("\n")
-        placeTilesInGrid(tiles2D)
+        output.text = tiles2D.toList.sortBy { _._2._2 }.map(x => s"${x._1} ${x._2._1}").mkString("\n")
+        placeTilesInGrid(tiles2D, doublures)
       } else { output.text = ""; new BoxPanel(Orientation.Vertical) /*Clear text box*/ }
   }
 } // Object ViewTilesSolver
