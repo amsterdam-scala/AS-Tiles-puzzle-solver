@@ -9,8 +9,7 @@ package nl.amsscala
  *  so `Set[Chain] = Set[List[Tile]]`
  *
  *
- *  The first element of a `Chain` holds the start tile and
- *  the last element the ending tile.
+ *  The first element of a `Chain` holds the start tile and the last element the ending tile.
  *
  *  If we take the left-overs in account the outcome should be: `Set[List[Chain]]` a.k.a. `Set[List[List[Tile]]]`
  *
@@ -24,9 +23,9 @@ package nl.amsscala
  */
 
 package object tilessolver {
-  /** A sequential List of a valid combination of tiles expresses a candidate solution.*/
+  /** A sequential List of a valid combination of tiles in fixed positions expresses a candidate solution.*/
   type Chain = List[Tile]
-  /** An unordered list of tiles.*/
+  /** An unordered list of tiles, commonly the items in hand to combine with.*/
   type TilesToUse = Chain
 
   /** Enumeration of the connection side of a tile*/

@@ -112,10 +112,10 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
   describe("A solution of the tile layout problem") {
     it("should layout the tile") {
       Given("a round walk")
-      assert(TilesSolver.layoutTiles(
+      assert(TilesSolver.virtualLayoutTiles(
         List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, W), Tile(E, N), Tile(S, N), Tile(S, C))) ==
-        Map((0, 2) -> (Tile(E, N), 4), (0, 0) -> (Tile(S, C), 6), (1, 1) -> (Tile(N, S), 2),
-          (0, 1) -> (Tile(S, N), 5), (1, 2) -> (Tile(N, W), 3), (1, 0) -> (Tile(W, S), 1)))
+        List(((0, 0), (Tile(C, E), 0)), ((1, 0), (Tile(W, S), 1)), ((1, 1), (Tile(N, S), 2)),
+          ((1, 2), (Tile(N, W), 3)), ((0, 2), (Tile(E, N), 4)), ((0, 1), (Tile(S, N), 5)), ((0, 0), (Tile(S, C), 6))))
     }
 
     val crazyResult = TilesSolver.findChains(TilesSolver.crazyExample)
@@ -165,8 +165,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
     }
 
     val longestLen = crazyResult.foldLeft(0)(_ max _.size)
-
-    val craziestResult = crazyResult.filter(_.size >= longestLen).maxBy(x => x.size - TilesSolver.layoutTiles(x).size)
+    val craziestResult = crazyResult.filter(_.size >= longestLen).minBy(TilesSolver.virtualLayoutTiles(_).toMap.size)
 
     it("should give the craziest result with most double used tile positions") {
       Given("craziest result")
@@ -174,21 +173,23 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
         List(Tile(C, N), Tile(S, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, E), Tile(W, C)))
     }
 
-    val craziestLayout = TilesSolver.layoutTiles(craziestResult)
+    val craziestLayout = TilesSolver.virtualLayoutTiles(craziestResult)
     it("should layout the tile for a craziest result") {
       Given("modified example")
-      assert(TilesSolver.layoutTiles(craziestResult) ==
-        Map((0, 0) -> (Tile(N, E), 6), (2, 0) -> (Tile(W, C), 8), (1, -2) -> (Tile(S, W), 3),
-          (0, -2) -> (Tile(E, S), 4), (1, -1) -> (Tile(W, N), 2), (1, 0) -> (Tile(W, E), 7),
-          (0, -1) -> (Tile(N, S), 5)))
+      assert(craziestLayout ==
+        List(((0, 0), (Tile(C, N), 0)), ((0, -1), (Tile(S, E), 1)), ((1, -1), (Tile(W, N), 2)), ((1, -2), (Tile(S, W), 3)), ((0, -2),
+          (Tile(E, S), 4)), ((0, -1), (Tile(N, S), 5)), ((0, 0), (Tile(N, E), 6)), ((1, 0), (Tile(W, E), 7)), ((2, 0), (Tile(W, C), 8))))
     }
 
     it("should compute the extreme dimensions for a craziest layout") {
       Given("modified example")
-      assert(TilesSolver.calculateExtremes(craziestLayout) == ((0, -2), (2, 0)))
+      assert(TilesSolver.calculateExtremes(craziestLayout.toMap) == ((0, -2), (2, 0)))
     }
 
-    // TODO Tests with no overlaps
+    it("should find the double tile positions") {
+      Given("modified example")
+      assert(TilesSolver.findOverlayedPositions(craziestLayout) == Set((0, 0), (0, -1)))
+    }
 
   } // describe
 

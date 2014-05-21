@@ -3,13 +3,11 @@ package tilessolver
 
 import java.awt.{ Cursor, Dimension }
 import java.awt.{ Graphics, Graphics2D }
-import java.awt.print.{ PageFormat, Printable }
+import java.awt.print.{ PageFormat, Printable, PrinterJob }
 import java.awt.print.Printable.{ NO_SUCH_PAGE, PAGE_EXISTS }
 import scala.swing.{ BoxPanel, Button, event, GridPanel, Label }
 import scala.swing.{ Orientation, Panel, ScrollPane, SimpleSwingApplication, TextArea }
 import scala.swing.Swing.VGlue
-import java.awt.print.PrinterException
-import java.awt.print.PrinterJob
 
 object TilesSolverApp extends ViewTilesSolver {
   System.setProperty("apple.laf.useScreenMenuBar", "true")
@@ -88,7 +86,7 @@ object TilesSolverApp extends ViewTilesSolver {
       private val dim = new Dimension(42, 42)
 
       def buttonsSeq = for {
-        x <- Directions.values.view
+        x <- Directions.values.view // Without view it would be in disorder
         y <- Directions.values.view
       } yield new Button {
         def butFingerprint(x: Directi, y: Directi): Option[Tile] = {
@@ -120,7 +118,7 @@ object TilesSolverApp extends ViewTilesSolver {
                       nAllLongestSolutions: Int,
                       selTiles: Chain) {
 
-    def placeTilesInGrid(toDraw: Map[(Int, Int), (Tile, Int)], dblure: Set[(Int, Int)]): Panel = {
+    def placeTilesInGrid(toDraw: Map[(Int, Int), (Tile, Int)], overlayPos: Set[(Int, Int)]): Panel = {
       // Compute the extremes, Most Top Left and the Most Bottom Right
       val (mostTopLeft, mostBottomRight) = TilesSolver.calculateExtremes(toDraw)
       new BoxPanel(Orientation.Vertical) {
@@ -130,13 +128,13 @@ object TilesSolverApp extends ViewTilesSolver {
               y <- mostTopLeft._2 to mostBottomRight._2
               x <- mostTopLeft._1 to mostBottomRight._1
             } yield new Button {
-              focusable=false
+              focusable = false
               this.
-              minimumSize = dim
+                minimumSize = dim
               preferredSize = dim
               val tile = toDraw.get((x, y))
 
-              if (dblure.contains((x, y))) background = java.awt.Color.RED
+              if (overlayPos.contains((x, y))) background = java.awt.Color.RED
               icon = if (tile.isDefined) { tooltip = tile.get.toString(); getTileImage(tile.get._1) }
               else blancImg
             })
@@ -147,19 +145,19 @@ object TilesSolverApp extends ViewTilesSolver {
 
     middle.text = selTiles.mkString("\n")
 
-    val tiles2Draw = TilesSolver.virtualLayoutTiles(selTiles)
-    val tiles2D = tiles2Draw.toMap
-
-    val doublures = TilesSolver.virtualLayoutTiles(selTiles).groupBy(_._1).filter(_._2.lengthCompare(1) > 0).keySet
+    val tiles2dRaw = TilesSolver.virtualLayoutTiles(selTiles)
+    val (tiles2D, overlayPos) = (tiles2dRaw.toMap, TilesSolver.findOverlayedPositions(tiles2dRaw))
 
     lblStatusField.text =
-      s"Found ${solutions} solution(s), ${nAllLongestSolutions} are the longest, all ${longestLen} long, overlaps: ${doublures.size}."
+      s"Found ${solutions} solution(s), ${nAllLongestSolutions} are the longest, all ${longestLen} long, overlaps: ${overlayPos.size}."
 
     mainPanel.contents(4).visible = false // This does the trick of redraw the outputGrid
     mainPanel.contents(4) =
-      if (longestLen != 0) {
-        output.text = tiles2D.toList.sortBy { _._2._2 }.map(x => s"${x._1} ${x._2._1}").mkString("\n")
-        placeTilesInGrid(tiles2D, doublures)
-      } else { output.text = ""; new BoxPanel(Orientation.Vertical) /*Clear text box*/ }
+      if (longestLen == 0) { output.text = ""; new BoxPanel(Orientation.Vertical) /*Clear text box*/ }
+      else {
+        output.text = tiles2D.toList.sortBy { case (coord, tileWithSerialN) => tileWithSerialN._2 }.
+          map { case (coord, tileWithSerialN) => s"${coord} ${tileWithSerialN._1}" }.mkString("\n")
+        placeTilesInGrid(tiles2D, overlayPos)
+      }
   }
 } // Object ViewTilesSolver
