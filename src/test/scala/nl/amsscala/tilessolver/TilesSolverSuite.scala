@@ -38,28 +38,28 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
     }
 
     it("should result in a set with one empty chain") {
-      given("an empty list")
-      expectResult(Set()) { TilesSolver.findChains(cases(0)) }
+      Given("an empty list")
+      assertResult(Set()) { TilesSolver.findChains(cases(0)) }
 
-      given("single tile West Center")
-      expectResult(Set())(TilesSolver.findChains(cases(1)))
+      Given("single tile West Center")
+      assertResult(Set())(TilesSolver.findChains(cases(1)))
 
-      given("single tile Center West")
-      expectResult(Set())(TilesSolver.findChains(cases(2)))
+      Given("single tile Center West")
+      assertResult(Set())(TilesSolver.findChains(cases(2)))
 
-      given("single tile West East")
-      expectResult(Set())(TilesSolver.findChains(cases(3)))
+      Given("single tile West East")
+      assertResult(Set())(TilesSolver.findChains(cases(3)))
 
-      given("two same tiles")
-      expectResult(Set())(TilesSolver.findChains(cases(4)))
+      Given("two same tiles")
+      assertResult(Set())(TilesSolver.findChains(cases(4)))
 
-      given("two mirrored tiles")
-      expectResult(Set())(TilesSolver.findChains(cases(5)))
+      Given("two mirrored tiles")
+      assertResult(Set())(TilesSolver.findChains(cases(5)))
 
-      given("two mirrored centered tiles")
-      expectResult(Set())(TilesSolver.findChains(cases(6)))
+      Given("two mirrored centered tiles")
+      assertResult(Set())(TilesSolver.findChains(cases(6)))
 
-      given("three mirrored centered tiles")
+      Given("three mirrored centered tiles")
       cases(7).permutations.foreach(casus => assert(TilesSolver.findChains(casus) === Set()))
     }
 

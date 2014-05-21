@@ -13,7 +13,7 @@ trait MenuUtils {
 
   def t(key: String): String
 
-  def mutateTextNmeIcon(
+  protected def mutateTextNmeIcon(
     pComp: AbstractButton,
     pActionTitleResourceText: String,
     pActionBlock: => Unit = {},
@@ -41,7 +41,7 @@ trait MenuUtils {
     pComp.action.accelerator = pAccelerator
   }
 
-  def menuItemFactory(
+  protected def menuItemFactory(
     pActionTitleResourceText: String,
     pActionBlock: => Unit,
     pAccelerator: Option[KeyStroke] = None,
@@ -49,10 +49,6 @@ trait MenuUtils {
     new MenuItem("") { mutateTextNmeIcon(this, pActionTitleResourceText, pActionBlock, pAccelerator, pIcon) }
   }
 
-  /*  case class MenuEx() extends AbstractButton{
-    def apply = new Menu("") 
-  }
-*/
 } // trait MenuUtils
 
 object ViewMenu extends MenuUtils {
@@ -60,10 +56,7 @@ object ViewMenu extends MenuUtils {
 
   def t(key: String) = key // Placeholder for resource manager
 
-  private val solutionsMenu = new Menu("") {
-    mutateTextNmeIcon(this, "&Solutions")
-    enabled = false
-  }
+  private val solutionsMenu = new Menu("") { mutateTextNmeIcon(this, "&Solutions") }
 
   val chkSorted = new CheckBox("Sorted &lists") { selected = true; tooltip = "Nothing fancy to do with this" }
 
@@ -162,4 +155,4 @@ object ViewMenu extends MenuUtils {
       contents += menuItemFactory(t("&About"), new ViewAboutBox)
     }
   } // def menuBar
-}
+} // object ViewMenu 
