@@ -1,6 +1,8 @@
 package nl.amsscala
 package tilessolver
 
+import scala.collection.parallel.immutable.ParSeq
+
 /** Core code or Model.*/
 object TilesSolver {
 
@@ -11,7 +13,7 @@ object TilesSolver {
    */
   def findChains(tiles: TilesToUse): Set[Chain] = {
     /** Available tiles to combine with. */
-    val tilesNotEndingInTheMiddle = tiles.filterNot(_.end == C)
+    val distinctTilesNotEndingInTheMiddle = tiles.filterNot(_.end == C).distinct
 
     /** Intermediate results to store and handle
      *
@@ -20,9 +22,9 @@ object TilesSolver {
      *  @param	onHand: TilesToUse Actual unused tiles.
      *  @param	outHand: Chain	Actual promising combinations in progress.
      */
-    case class AssetHandling(val candidates: TilesToUse = tilesNotEndingInTheMiddle,
-                             onHand: TilesToUse = tilesNotEndingInTheMiddle,
-                             outHand: Chain = Nil) {
+    class AssetHandling(val candidates: TilesToUse = distinctTilesNotEndingInTheMiddle,
+                        val onHand: TilesToUse = distinctTilesNotEndingInTheMiddle,
+                        val outHand: Chain = Nil) {
       /** Test if the chain is complete */
       def isCompletedTileChain = !outHand.isEmpty && (outHand.head.start == C)
 
@@ -38,7 +40,7 @@ object TilesSolver {
             if (candidates.head.start == C) (List(candidates.head, previousTile), Nil)
             else (List(previousTile), restOnHand)
 
-          AssetHandling(influenceWalk,
+          new AssetHandling(influenceWalk,
             restOnHand, // explore further without the used tile
             // If ending tile save 2 tiles, including the ending one
             assetToTransfer ++ outHand)
@@ -54,21 +56,19 @@ object TilesSolver {
              asset: AssetHandling,
              maintainedChains: Set[Chain] /*List of chains so far discovered*/ ): Set[Chain] = {
       // If list is done return result otherwise continue with list
-      if (trail.isEmpty) asset.transferLastFoundChain(maintainedChains) // distinct of a set is necessary, don't know why
+      if (trail.isEmpty) asset.transferLastFoundChain(maintainedChains) // Finished
       else if (asset.candidates.isEmpty) // Try a new walk 
-        walk(trail.tail,
-          AssetHandling( /*onHand = asset.onHand*/ ),
-          asset.transferLastFoundChain(maintainedChains))
+        walk(trail.tail, new AssetHandling(), asset.transferLastFoundChain(maintainedChains))
       else // Do a matching with each other tile
-        // Split up in a unknown path with skipping current match and a path wit a match
-        walk(trail, AssetHandling(asset.candidates.tail, asset.onHand, asset.outHand), maintainedChains
+        // Split up in an unknown path with skipping current match and a path with a match
+        walk(trail, new AssetHandling(asset.candidates.tail, asset.onHand, asset.outHand), maintainedChains
           ++ (if (trail.head.start isJoinable asset.candidates.head.end) // explore further with new found tile
             walk(List(asset.candidates.head), asset.processFoundTile(trail.head), maintainedChains)
           else Nil))
     } // def walk(
 
     walk(tiles.filter(_.end == C).distinct, // Start with ending tiles, one of each
-      AssetHandling(candidates = tilesNotEndingInTheMiddle.distinct),
+      new AssetHandling(candidates = distinctTilesNotEndingInTheMiddle),
       maintainedChains = Set.empty)
   } // def findChains(
 

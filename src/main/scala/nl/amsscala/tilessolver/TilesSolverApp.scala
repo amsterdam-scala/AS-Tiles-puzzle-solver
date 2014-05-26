@@ -149,7 +149,7 @@ object TilesSolverApp extends ViewTilesSolver {
     val (tiles2D, overlayPos) = (tiles2dRaw.toMap, TilesSolver.findOverlayedPositions(tiles2dRaw))
 
     lblStatusField.text =
-      s"Found ${solutions} solution(s), ${nAllLongestSolutions} are the longest, all ${longestLen} long, overlaps: ${overlayPos.size}."
+      s"Found ${solutions} potential solution(s), ${nAllLongestSolutions} are the longest, all ${longestLen} long, overlaps: ${overlayPos.size}."
 
     mainPanel.contents(4).visible = false // This does the trick of redraw the outputGrid
     mainPanel.contents(4) =

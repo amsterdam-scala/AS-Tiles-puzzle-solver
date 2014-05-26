@@ -183,12 +183,12 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
 
     it("should compute the extreme dimensions for a craziest layout") {
       Given("modified example")
-      assert(TilesSolver.calculateExtremes(craziestLayout.toMap) == ((0, -2), (2, 0)))
+      assert(TilesSolver.calculateExtremes(craziestLayout.toMap) === ((0, -2), (2, 0)))
     }
 
     it("should find the double tile positions") {
       Given("modified example")
-      assert(TilesSolver.findOverlayedPositions(craziestLayout) == Set((0, 0), (0, -1)))
+      assert(TilesSolver.findOverlayedPositions(craziestLayout) === Set((0, 0), (0, -1)))
     }
 
   } // describe
