@@ -1,48 +1,41 @@
 package nl.amsscala
 package tilessolver
 
-import java.awt.{ Cursor, Dimension }
-import java.awt.{ Graphics, Graphics2D }
+import java.awt.{ Cursor, Dimension, Graphics, Graphics2D }
 import java.awt.print.{ PageFormat, Printable, PrinterJob }
 import java.awt.print.Printable.{ NO_SUCH_PAGE, PAGE_EXISTS }
-import scala.swing.{ BoxPanel, Button, event, GridPanel, Label }
-import scala.swing.{ Orientation, Panel, ScrollPane, SimpleSwingApplication, TextArea }
+import javax.swing.ImageIcon
+import scala.swing.{ BorderPanel, BoxPanel, Button, Component, event }
+import scala.swing.{ FlowPanel, GridPanel, Label, MainFrame, Orientation }
+import scala.swing.{ Panel, ScrollPane, SimpleSwingApplication, TextArea }
 import scala.swing.Swing.VGlue
 
-object TilesSolverApp extends ViewTilesSolver {
-  System.setProperty("apple.laf.useScreenMenuBar", "true")
+object Model {
+  var rawSolutions: Set[Chain] = Set()
 
-  private val blancImg = new javax.swing.ImageIcon(resourceFromClassloader("resources/TileXX.png"))
-  private val dim = new Dimension(42, 42)
   private var givenTiles_ : TilesToUse = Nil
   def givenTiles = givenTiles_
-  var rawSolutions: Set[Chain] = Set()
 
   def changeInput(tiles: TilesToUse) {
     givenTiles_ = tiles
-    mainPanel.cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
-    lblStatusField.text = s"Computing for ${givenTiles_.size} tiles ..."
+    TilesSolverApp.mainPanel.cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
+    TilesSolverApp.lblStatusField.text = s"Computing for ${givenTiles_.size} tiles ..."
     ////////////////////////////// procesSituation /////////////////////////////
     rawSolutions = TilesSolver.findChains(givenTiles)
-    updateMiddle()
+    Control.updateMiddle()
   }
+}
 
-  def updateMiddle() {
+trait View extends SimpleSwingApplication {
+  System.setProperty("apple.laf.useScreenMenuBar", "true")
 
-    given.text = s"${givenTiles.mkString("\n")}"
+  val applicationTitle = "Tiles Puzzle Solver"
+  val applicationShort = "Tiles solver"
 
-    val solutions = TilesSolver.filterRealSolutions(rawSolutions, !ViewMenu.chkNoOverlap.selected)
+  val blancImg = new javax.swing.ImageIcon(resourceFromClassloader("resources/TileXX.png"))
+  val dim = new Dimension(42, 42)
 
-    val longestLen = solutions.foldLeft(0)(_ max _.size)
-    // Get the longest paths
-    val allLongestSolutions = solutions.filter(_.size >= longestLen)
-
-    ViewMenu.buildSolutionsMenu(solutions.size, longestLen, allLongestSolutions.size, allLongestSolutions)
-
-    mainPanel.cursor = Cursor.getDefaultCursor()
-  }
-
-  private val (given, middle, output) =
+  val (given, middle, output) =
     (new TextArea("Given tiles", 14, 10) { editable = false },
       new TextArea("Combination", 14, 10) { editable = false },
       new TextArea("Tessellation", 14, 16) { editable = false })
@@ -60,9 +53,6 @@ object TilesSolverApp extends ViewTilesSolver {
         /* User (0,0) is typically outside the imageable area, so we must
          * translate by the X and Y values in the PageFormat to avoid clipping
          */
-        //        val g2d = g.asInstanceOf[Graphics2D]
-        //        g2d.translate(pf.getImageableX(), pf.getImageableY())
-
         /* Now print the window and its visible contents */
         this.peer.printAll(g)
 
@@ -104,7 +94,7 @@ object TilesSolverApp extends ViewTilesSolver {
         listenTo(mouse.clicks)
         reactions += {
           case click: event.MouseClicked if tile.isDefined => {
-            changeInput(givenTiles ++ List(tile.get))
+            Model.changeInput(Model.givenTiles ++ List(tile.get))
           } // event.MouseClicked
         }
       } // for yield & def buttonsSeq 
@@ -112,11 +102,39 @@ object TilesSolverApp extends ViewTilesSolver {
       contents ++= buttonsSeq
     } // def tileBoard
 
+  def getTileImage(tile: Tile) = {
+    new ImageIcon(resourceFromClassloader(s"resources/Tile${tile.start}${tile.end}.png"))
+  }
+
+  object lblStatusField extends Label {
+    text = ViewMenu.t("Compose a set of tiles by clicking on the tile pad.")
+    horizontalAlignment = scala.swing.Alignment.Left
+  }
+
+  def ui(toolbar: Option[Component] = None) = new BorderPanel() {
+
+    def statusBar = new FlowPanel(FlowPanel.Alignment.Leading)(lblStatusField)
+
+    ///////////////////////// Start of ui //////////////////////////////////////
+
+    if (!toolbar.isEmpty) add(toolbar.get, BorderPanel.Position.North)
+    layout(TilesSolverApp.mainPanel) = BorderPanel.Position.Center
+    layout(statusBar) = BorderPanel.Position.South
+  } // def ui
+
+  def top() = new MainFrame {
+    title = TilesSolverApp.applicationTitle
+    iconImage = toolkit.getImage(getClass.getResource("resources/px-32ams-scala.png"))
+    menuBar = ViewMenu.menuBar
+    contents = TilesSolverApp.ui()
+    centerOnScreen
+  }
+}
+
+object Control {
+
   /** Place tiles in a grid */
-  def displaySelected(solutions: Int,
-                      longestLen: Int,
-                      nAllLongestSolutions: Int,
-                      selTiles: Chain) {
+  def displaySelected(solutions: Int, longestLen: Int, nAllLongestSolutions: Int, selTiles: Chain) {
 
     def placeTilesInGrid(toDraw: Map[(Int, Int), (Tile, Int)], overlayPos: Set[(Int, Int)]): Panel = {
       // Compute the extremes, Most Top Left and the Most Bottom Right
@@ -130,34 +148,50 @@ object TilesSolverApp extends ViewTilesSolver {
             } yield new Button {
               focusable = false
               this.
-                minimumSize = dim
-              preferredSize = dim
+                minimumSize = TilesSolverApp.dim
+              preferredSize = TilesSolverApp.dim
               val tile = toDraw.get((x, y))
 
               if (overlayPos.contains((x, y))) background = java.awt.Color.RED
-              icon = if (tile.isDefined) { tooltip = tile.get.toString(); getTileImage(tile.get._1) }
-              else blancImg
+              icon = if (tile.isDefined) { tooltip = tile.get.toString(); TilesSolverApp.getTileImage(tile.get._1) }
+              else TilesSolverApp.blancImg
             })
           }
         contents ++= List(VGlue)
       }
     } // def placeTilesInGrid
 
-    middle.text = selTiles.mkString("\n")
+    TilesSolverApp.middle.text = selTiles.mkString("\n")
 
     val tiles2dRaw = TilesSolver.virtualLayoutTiles(selTiles)
     val (tiles2D, overlayPos) = (tiles2dRaw.toMap, TilesSolver.findOverlayedPositions(tiles2dRaw))
 
-    lblStatusField.text =
+    TilesSolverApp.lblStatusField.text =
       s"Found ${solutions} potential solution(s), ${nAllLongestSolutions} are the longest, all ${longestLen} long, overlaps: ${overlayPos.size}."
 
-    mainPanel.contents(4).visible = false // This does the trick of redraw the outputGrid
-    mainPanel.contents(4) =
-      if (longestLen == 0) { output.text = ""; new BoxPanel(Orientation.Vertical) /*Clear text box*/ }
+    TilesSolverApp.mainPanel.contents(4).visible = false // This does the trick of redraw the outputGrid
+    TilesSolverApp.mainPanel.contents(4) =
+      if (longestLen == 0) { TilesSolverApp.output.text = ""; new BoxPanel(Orientation.Vertical) /*Clear text box*/ }
       else {
-        output.text = tiles2D.toList.sortBy { case (coord, tileWithSerialN) => tileWithSerialN._2 }.
+        TilesSolverApp.output.text = tiles2D.toList.sortBy { case (coord, tileWithSerialN) => tileWithSerialN._2 }.
           map { case (coord, tileWithSerialN) => s"${coord} ${tileWithSerialN._1}" }.mkString("\n")
         placeTilesInGrid(tiles2D, overlayPos)
       }
+  } // def displaySelected
+
+  def updateMiddle() {
+
+    val solutions = TilesSolver.filterRealSolutions(Model.rawSolutions, !ViewMenu.chkNoOverlap.selected)
+
+    val longestLen = solutions.foldLeft(0)(_ max _.size)
+    // Get the longest paths
+    val allLongestSolutions = solutions.filter(_.size >= longestLen)
+
+    TilesSolverApp.given.text = Model.givenTiles.mkString("\n")
+
+    ViewMenu.buildSolutionsMenu(solutions.size, longestLen, allLongestSolutions.size, allLongestSolutions)
+    TilesSolverApp.mainPanel.cursor = Cursor.getDefaultCursor()
   }
-} // Object ViewTilesSolver
+} // object Control
+
+object TilesSolverApp extends View

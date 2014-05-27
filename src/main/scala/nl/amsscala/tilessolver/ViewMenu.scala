@@ -4,14 +4,14 @@ package tilessolver
 import java.awt.event.KeyEvent
 import java.awt.Toolkit
 import javax.swing.{ ImageIcon, KeyStroke }
-import scala.swing.{ AbstractButton, Action, CheckBox, Menu, MenuBar }
-import scala.swing.{ MenuItem, Separator }
+import scala.swing.{ AbstractButton, Action, CheckBox }
+import scala.swing.{ Menu, MenuBar, MenuItem, Separator }
 import scala.swing.Swing.{ EmptyIcon, HGlue }
 import scala.swing.event.Key
 
 trait MenuUtils {
 
-  def t(key: String): String
+  def t(key: String) = key // Placeholder for resource manager
 
   protected def mutateTextNmeIcon(
     pComp: AbstractButton,
@@ -28,16 +28,16 @@ trait MenuUtils {
      */
     val (mne, mnuItemText) = {
       val text = t(pActionTitleResourceText)
-      // The mnemonic parser, filter the mnemonic character(s)
+      // The mnemonic parser, filter by the mnemonic character(s) and text
       (text.replaceAll("&&", "").sliding(2).filter(_.init == "&").take(1),
-        "&[^&]".r.replaceAllIn(text, m => m.matched.tail)) // Filter the ampersands
+        "&[^&]".r.replaceAllIn(text, _.matched.tail)) // Filter the ampersands
     }
 
     pComp.action = Action(mnuItemText) { pActionBlock }
 
     // Mutate component
     if (mne.hasNext) pComp.mnemonic = Key.withName((mne.next.last).toUpper.toString)
-    pComp.icon = pIcon
+    if (!pComp.isInstanceOf[CheckBox]) pComp.icon = pIcon
     pComp.action.accelerator = pAccelerator
   }
 
@@ -48,49 +48,38 @@ trait MenuUtils {
     pIcon: javax.swing.Icon = EmptyIcon): MenuItem = {
     new MenuItem("") { mutateTextNmeIcon(this, pActionTitleResourceText, pActionBlock, pAccelerator, pIcon) }
   }
-
 } // trait MenuUtils
 
 object ViewMenu extends MenuUtils {
   private val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+  private val solutionsMenu = new Menu("") { mutateTextNmeIcon(this, t("&Solutions")); enabled = false }
 
-  def t(key: String) = key // Placeholder for resource manager
+  private val chkSorted = new CheckBox() {
+    mutateTextNmeIcon(this, t("Sorted &lists")); selected = true; tooltip = t("Nothing fancy to do with this")
+  }
 
-  private val solutionsMenu = new Menu("") { mutateTextNmeIcon(this, "&Solutions") }
+  val chkNoOverlap = new CheckBox() { action = Action(t("No overlaps")) { Control.updateMiddle() } }
 
-  val chkSorted = new CheckBox("Sorted &lists") { selected = true; tooltip = "Nothing fancy to do with this" }
-
-  val chkNoOverlap = new CheckBox() { action = Action("No overlaps") { TilesSolverApp.updateMiddle() } }
-
-  def buildSolutionsMenu(nSolution: Int,
-                         longestLen: Int,
-                         nAllLongestSolutions: Int,
-                         solutions: Set[Chain]) = {
+  def buildSolutionsMenu(nSolution: Int, longestLen: Int, nAllLongestSolutions: Int, solutions: Set[Chain]) = {
     solutionsMenu.enabled = solutions.size > 1
     solutionsMenu.contents.clear
     solutionsMenu.contents ++=
       (for (elem <- solutions.zipWithIndex.view) yield {
         menuItemFactory(t(s"Solution &${elem._2 + 1}"),
-          TilesSolverApp.displaySelected(nSolution,
-            longestLen,
-            nAllLongestSolutions,
-            elem._1))
+          Control.displaySelected(nSolution, longestLen, nAllLongestSolutions, elem._1))
       })
 
-    TilesSolverApp.displaySelected(nSolution,
-      longestLen,
-      nAllLongestSolutions,
-      solutions.headOption.getOrElse(Nil))
+    Control.displaySelected(nSolution, longestLen, nAllLongestSolutions, solutions.headOption.getOrElse(Nil))
   }
 
   def menuBar: MenuBar = new MenuBar {
     // File menu
     contents += new Menu("") {
-      mutateTextNmeIcon(this, "&File")
+      mutateTextNmeIcon(this, t("&File"))
       tooltip = "File Tooltip text"
 
       contents.append(
-        menuItemFactory(t("&New"), { TilesSolverApp.changeInput(Nil) },
+        menuItemFactory(t("&New"), { Model.changeInput(Nil) },
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutKeyMask))),
         new Separator,
         menuItemFactory(t("&Print"), { TilesSolverApp.mainPanel.doPrint },
@@ -104,34 +93,34 @@ object ViewMenu extends MenuUtils {
 
     // Edit menu
     contents += new Menu("") {
-      mutateTextNmeIcon(this, "&Edit")
+      mutateTextNmeIcon(this, t("&Edit"))
       enabled = false
     }
 
     // View menu
     contents += new Menu("") {
-      mutateTextNmeIcon(this, "&View")
+      mutateTextNmeIcon(this, t("&View"))
       //enabled = false
       contents.append(chkSorted)
     }
 
-    import Directions.{ C, N, E, S, W }
     // Tiles menu
+    import Directions.{ C, N, E, S, W }
     contents += new Menu("") {
-      mutateTextNmeIcon(this, "&Tiles")
+      mutateTextNmeIcon(this, t("&Tiles"))
       contents.append(menuItemFactory(t("Asse&gnazione originale di Fabio"),
-        TilesSolverApp.changeInput(TilesSolver.fabioPhoto),
+        Model.changeInput(TilesSolver.fabioPhoto),
         Some(KeyStroke.getKeyStroke(KeyEvent.VK_1, shortcutKeyMask)) //
         , //
         new ImageIcon(getClass.getResource("resources/px-20ticofab.png"))),
         menuItemFactory(t("&Missing tiles due to overlaps"),
-          TilesSolverApp.changeInput(List(Tile(C, E), Tile(N, S), Tile(S, N), Tile(W, S), Tile(N, W), Tile(E, N), Tile(S, C))),
+          Model.changeInput(TilesSolver.missingsTileOverlap),
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))),
         menuItemFactory(t("&Modified example"),
-          TilesSolverApp.changeInput(TilesSolver.modifiedExample),
+          Model.changeInput(TilesSolver.modifiedExample),
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))),
         menuItemFactory(t("C&razy example"),
-          TilesSolverApp.changeInput(TilesSolver.crazyExample),
+          Model.changeInput(TilesSolver.crazyExample),
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_3, shortcutKeyMask))))
     }
 
@@ -143,11 +132,11 @@ object ViewMenu extends MenuUtils {
     contents += HGlue
 
     // Window menu
-    contents += new Menu("") { mutateTextNmeIcon(this, "&Window"); enabled = false }
+    contents += new Menu("") { mutateTextNmeIcon(this, t("&Window")); enabled = false }
 
     // Help Menu
     contents += new Menu("") {
-      mutateTextNmeIcon(this, "&Help")
+      mutateTextNmeIcon(this, t("&Help"))
 
       contents += menuItemFactory(
         t("Show &help"), { new ViewHelp }, Some(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)))
