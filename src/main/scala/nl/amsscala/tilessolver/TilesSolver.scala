@@ -1,8 +1,6 @@
 package nl.amsscala
 package tilessolver
 
-import scala.collection.parallel.immutable.ParSeq
-
 /** Core code or Model.*/
 object TilesSolver {
 
@@ -23,9 +21,10 @@ object TilesSolver {
      *  @param	onHand: TilesToUse Actual unused tiles.
      *  @param	outHand: Chain	Actual promising combinations in progress.
      */
-    class AssetHandling(val candidates: TilesToUse = distinctTilesNotEndingInTheMiddle,
-                        val onHand: TilesToUse = distinctTilesNotEndingInTheMiddle,
-                        val outHand: Chain = Nil) {
+    class AssetHandling(
+        val onHand: TilesToUse = tilesNotEndingInTheMiddle,
+        val candidates: TilesToUse = distinctTilesNotEndingInTheMiddle,
+        val outHand: Chain = Nil) {
       /** Test if the chain is complete */
       def isCompletedTileChain = !outHand.isEmpty && (outHand.head.start == C)
 
@@ -41,8 +40,8 @@ object TilesSolver {
             if (candidates.head.start == C) (List(candidates.head, previousTile), Nil)
             else (List(previousTile), restOnHand)
 
-          new AssetHandling(influenceWalk,
-            restOnHand, // explore further without the used tile
+          new AssetHandling(restOnHand, // explore further without the used tile
+            influenceWalk,
             // If ending tile save 2 tiles, including the ending one
             assetToTransfer ++ outHand)
         }
@@ -59,10 +58,10 @@ object TilesSolver {
       // If list is done return result otherwise continue with list
       if (trail.isEmpty) asset.transferLastFoundChain(maintainedChains) // Finished
       else if (asset.candidates.isEmpty) // Try a new walk 
-        walk(trail.tail, new AssetHandling(onHand = tilesNotEndingInTheMiddle), asset.transferLastFoundChain(maintainedChains))
+        walk(trail.tail, new AssetHandling(), asset.transferLastFoundChain(maintainedChains))
       else // Do a matching with each other tile
         // Split up in an unknown path with skipping current match and a path with a match
-        walk(trail, new AssetHandling(asset.candidates.tail, asset.onHand, asset.outHand), maintainedChains
+        walk(trail, new AssetHandling(asset.onHand, asset.candidates.tail, asset.outHand), maintainedChains
           ++ (if (trail.head.start isJoinable asset.candidates.head.end) // explore further with new found tile
             walk(List(asset.candidates.head), asset.processFoundTile(trail.head), maintainedChains)
           else Nil))

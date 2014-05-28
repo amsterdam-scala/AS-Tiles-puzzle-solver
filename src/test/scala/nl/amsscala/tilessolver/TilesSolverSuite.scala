@@ -91,6 +91,14 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
         Set(List(Tile(C, E), Tile(W, C)), List(Tile(C, E), Tile(W, E), Tile(W, C))))
     }
 
+    it("given the double long linear path") {
+      assert(TilesSolver.findChains(List(Tile(C, E), Tile(W, E), Tile(W, E), Tile(W, E),
+        Tile(W, C), Tile(C, S), Tile(N, S), Tile(N, S), Tile(N, S), Tile(S, C))) ===
+        Set(List(Tile(C, E), Tile(W, C)), List(Tile(C, E), Tile(W, E), Tile(W, C)),
+          List(Tile(C, E), Tile(W, E), Tile(W, E), Tile(W, C)),
+          List(Tile(C, E), Tile(W, E), Tile(W, E), Tile(W, E), Tile(W, C))))
+    }
+
     it("given the example of the site should still result in a set of chains") {
       assert(TilesSolver.findChains(TilesSolver.fabioPhoto) ===
         Set( //
