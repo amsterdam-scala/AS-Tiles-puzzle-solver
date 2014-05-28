@@ -13,7 +13,8 @@ object TilesSolver {
    */
   def findChains(tiles: TilesToUse): Set[Chain] = {
     /** Available tiles to combine with. */
-    val distinctTilesNotEndingInTheMiddle = tiles.filterNot(_.end == C).distinct
+    val tilesNotEndingInTheMiddle = tiles.filterNot(_.end == C)
+    val distinctTilesNotEndingInTheMiddle = tilesNotEndingInTheMiddle.distinct
 
     /** Intermediate results to store and handle
      *
@@ -58,7 +59,7 @@ object TilesSolver {
       // If list is done return result otherwise continue with list
       if (trail.isEmpty) asset.transferLastFoundChain(maintainedChains) // Finished
       else if (asset.candidates.isEmpty) // Try a new walk 
-        walk(trail.tail, new AssetHandling(), asset.transferLastFoundChain(maintainedChains))
+        walk(trail.tail, new AssetHandling(onHand = tilesNotEndingInTheMiddle), asset.transferLastFoundChain(maintainedChains))
       else // Do a matching with each other tile
         // Split up in an unknown path with skipping current match and a path with a match
         walk(trail, new AssetHandling(asset.candidates.tail, asset.onHand, asset.outHand), maintainedChains
@@ -68,7 +69,7 @@ object TilesSolver {
     } // def walk(
 
     walk(tiles.filter(_.end == C).distinct, // Start with ending tiles, one of each
-      new AssetHandling(candidates = distinctTilesNotEndingInTheMiddle),
+      new AssetHandling(),
       maintainedChains = Set.empty)
   } // def findChains(
 
