@@ -51,7 +51,7 @@ trait MenuUtils {
 } // trait MenuUtils
 
 object ViewMenu extends MenuUtils {
-  private val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+  private final val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
   private val solutionsMenu = new Menu("") { mutateTextNmeIcon(this, t("&Solutions")); enabled = false }
 
   private val chkSorted = new CheckBox() {

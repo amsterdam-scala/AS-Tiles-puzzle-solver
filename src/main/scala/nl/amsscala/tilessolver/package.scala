@@ -27,6 +27,8 @@ package object tilessolver {
   type Chain = List[Tile]
   /** An unordered list of tiles, commonly the items in hand to combine with.*/
   type TilesToUse = Chain
+  /** A tile with a computed position and serial number */
+  type LayedTile = ((Int, Int), (Tile, Int /*Serial number */ ))
 
   /** Enumeration of the connection side of a tile*/
   object Directions extends Enumeration {
@@ -41,11 +43,12 @@ package object tilessolver {
         }
 
       /** Test if the sides of titles pair could be adjacent.
-       *  The function return true if the ending side meets a legal terminating side.
+       *  The function returns true if the ending side meets a legal terminating side.
        */
       def isJoinable(adjacent: Directi) = (this != C) && adjacent == allowedAdjacent
 
-      def step(ori: (Int, Int)) = {
+      /** Given this Direction and the coordinate compute the coordinate of the next tile.*/
+      def step(ori: (Int, Int)): (Int, Int) = {
         this match {
           case N => (ori._1, ori._2 - 1) // Northward
           case E => (ori._1 + 1, ori._2) // Eastward
@@ -57,7 +60,7 @@ package object tilessolver {
     }
     type Directions = Directi
     /** Side names of Tiles */
-    val C, N, E, S, W = Directi() // Center, North, East, South ...
+    final val C, N, E, S, W = Directi() // Center, North, East, South ...
   } // object Directions
 
   import Directions.Directi
@@ -69,5 +72,7 @@ package object tilessolver {
    */
   case class Tile(val start: Directi, end: Directi) {
     require(start != end, s"Not a proper tile definition, given $start, $end are the same.")
+
+    def whereNext(ori: (Int, Int)): (Int, Int) = this.end.step(ori)
   }
 }

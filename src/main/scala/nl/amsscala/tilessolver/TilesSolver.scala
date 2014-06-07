@@ -63,8 +63,7 @@ object TilesSolver {
         // Split up in an unknown path with skipping current match and a path with a match
         walk(trail, new AssetHandling(asset.onHand, asset.candidates.tail, asset.outHand), maintainedChains
           ++ (if (trail.head.start isJoinable asset.candidates.head.end) // explore further with new found tile
-            walk(List(asset.candidates.head), asset.processFoundTile(trail.head), maintainedChains)
-          else Nil))
+            walk(List(asset.candidates.head), asset.processFoundTile(trail.head), maintainedChains) else Nil))
     } // def walk(
 
     walk(tiles.filter(_.end == C).distinct, // Start with ending tiles, one of each
@@ -76,21 +75,24 @@ object TilesSolver {
    *  the direction after each tile is known. After a tile a step is made in one
    *  of the 4 directions, this result in a increment/decrement in x or either y.
    *
-   *  returns (coordinate)(Tile,n) list, n is serial number added for later sorting.
+   *  returns ((coordinate),(Tile,n)) list, n is serial number added for later sorting.
    */
-  def virtualLayoutTiles(chain: Chain): List[((Int, Int), (Tile, Int))] =
+  def virtualTilesLayouter(chain: Chain): List[LayedTile] =
     if (chain.isEmpty) Nil else
-      chain.tail.scanLeft[((Int, Int), (Tile, Int)), List[((Int, Int), (Tile, Int))]](((0, 0), (chain.head, 0))) {
-        (resultingTuple, currentTile) =>
-          (((resultingTuple._2._1.end.step(resultingTuple._1))), (currentTile, resultingTuple._2._2 + 1))
+      chain.tail.scanLeft[LayedTile, List[LayedTile]]((0, 0), (chain.head, 0)) {
+        (layedTile, scannedTile) =>
+          ((layedTile._2._1.whereNext(layedTile._1)), (scannedTile, layedTile._2._2 + 1))
       }
 
-  /** Remove the solutions with double tiles on one place */
+  /** Remove the solutions with double tiles on one place
+   *  by comparing the raw length of each path with the real length without double positions.
+   *  Done by the keySET of a map where no double keys are possible.
+   */
   def filterRealSolutions(rawSolutions: Set[Chain], unFiltered: Boolean) =
-    rawSolutions.filter(p => (unFiltered || p.lengthCompare(virtualLayoutTiles(p).toMap.size) <= 0))
+    rawSolutions.filter(p => (unFiltered || p.lengthCompare(virtualTilesLayouter(p).toMap.size) <= 0))
 
   /** Find tile positions which are overlaid */
-  def findOverlayedPositions(layout: List[((Int, Int), (Tile, Int))]) =
+  def findOverlayedPositions(layout: List[LayedTile]) =
     layout.groupBy(_._1).filter { case (coord, grouplist) => grouplist.lengthCompare(1) > 0 }.keySet
 
   /** Compute the extremes, Least Top Left and the Most Bottom Right in one go */

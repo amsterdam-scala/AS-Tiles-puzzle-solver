@@ -120,7 +120,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
   describe("A solution of the tile layout problem") {
     it("should layout the tile") {
       Given("a round walk")
-      assert(TilesSolver.virtualLayoutTiles(
+      assert(TilesSolver.virtualTilesLayouter(
         List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, W), Tile(E, N), Tile(S, N), Tile(S, C))) ==
         List(((0, 0), (Tile(C, E), 0)), ((1, 0), (Tile(W, S), 1)), ((1, 1), (Tile(N, S), 2)),
           ((1, 2), (Tile(N, W), 3)), ((0, 2), (Tile(E, N), 4)), ((0, 1), (Tile(S, N), 5)), ((0, 0), (Tile(S, C), 6))))
@@ -173,7 +173,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
     }
 
     val longestLen = crazyResult.foldLeft(0)(_ max _.size)
-    val craziestResult = crazyResult.filter(_.size >= longestLen).minBy(TilesSolver.virtualLayoutTiles(_).toMap.size)
+    val craziestResult = crazyResult.filter(_.size >= longestLen).minBy(TilesSolver.virtualTilesLayouter(_).toMap.size)
 
     it("should give the craziest result with most double used tile positions") {
       Given("craziest result")
@@ -181,7 +181,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
         List(Tile(C, N), Tile(S, E), Tile(W, N), Tile(S, W), Tile(E, S), Tile(N, S), Tile(N, E), Tile(W, E), Tile(W, C)))
     }
 
-    val craziestLayout = TilesSolver.virtualLayoutTiles(craziestResult)
+    val craziestLayout = TilesSolver.virtualTilesLayouter(craziestResult)
     it("should layout the tile for a craziest result") {
       Given("modified example")
       assert(craziestLayout ==
