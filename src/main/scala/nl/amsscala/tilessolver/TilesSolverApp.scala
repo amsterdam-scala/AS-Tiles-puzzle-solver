@@ -9,6 +9,7 @@ import scala.swing.{ BorderPanel, BoxPanel, Button, Component, event }
 import scala.swing.{ FlowPanel, GridPanel, Label, MainFrame, Orientation }
 import scala.swing.{ Panel, ScrollPane, SimpleSwingApplication, TextArea }
 import scala.swing.Swing.{ pair2Dimension, VGlue }
+import java.net.URL
 
 object Model {
   var rawSolutions: Set[Chain] = Set()
@@ -31,14 +32,28 @@ trait View extends SimpleSwingApplication {
 
   final val applicationTitle = "Tiles Puzzle Solver"
   final val applicationShort = "Tiles solver"
+  final val blancImg = getImageByPartialPath("resources/TileXX.png")
 
-  final val blancImg = new javax.swing.ImageIcon(resourceFromClassloader("resources/TileXX.png"))
   final val dim = (42, 42)
 
   val (given, middle, output) =
     (new TextArea("Given tiles", 14, 10) { editable = false },
       new TextArea("Combination", 12, 10) { editable = false },
       new TextArea("Tessellation", 14, 16) { editable = false })
+
+  def getImageByPartialPath(partPath: String) =
+    getImageByFullPath(partPath, resourceFromClassloader(partPath))
+
+  def getImageByFullPath(partPath: String, path: URL): ImageIcon = {
+    try {
+      new ImageIcon(path)
+    } catch {
+      case t: Throwable => {
+        println(s"$t: ${partPath} not found")
+        throw new ExceptionInInitializerError("Resource not found")
+      }
+    }
+  }
 
   val mainPanel = new BoxPanel(Orientation.Horizontal) with Printable {
     contents += tileBoard
@@ -102,7 +117,7 @@ trait View extends SimpleSwingApplication {
     } // def tileBoard
 
   def getTileImage(tile: Tile) =
-    new ImageIcon(resourceFromClassloader(s"resources/Tile${tile.start}${tile.end}.png"))
+    getImageByPartialPath(s"resources/Tile${tile.start}${tile.end}.png")
 
   object lblStatusField extends Label {
     text = ViewMenu.t("Compose a set of tiles by clicking on the tile pad.")

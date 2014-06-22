@@ -4,7 +4,6 @@ package tilessolver
 import scala.swing.{ Action, Alignment, BorderPanel, Button, Dialog }
 import scala.swing.{ GridBagPanel, Label, Swing }
 import scala.swing.Swing.EmptyIcon
-import javax.swing.ImageIcon
 
 protected class ViewHelp extends Dialog {
 
@@ -16,8 +15,8 @@ protected class ViewHelp extends Dialog {
   contents = new BorderPanel {
     layout(new GridBagPanel {
       add(new Label("",
-        new ImageIcon(getClass.getResource("resources/TilesRules.png")), Alignment.Center) {},
-        new Constraints { grid = (0, 0) })
+        TilesSolverApp.getImageByPartialPath("resources/TilesRules.png"), Alignment.Center) {},
+        new Constraints { /*grid =*/ (0, 0) })
     }) = BorderPanel.Position.Center
   }
 
@@ -53,14 +52,14 @@ protected class ViewAboutBox extends Dialog {
       }, gbc)
 
       gbc.grid = (1, 5)
-      add(new Label("Dedicated to Fabio, who cannot find friends outside the Scala Meetup group :-)", EmptyIcon, Alignment.Left) {
+      add(new Label("<html>Dedicated to Fabio, who can find only<br>friends inside the Scala Meetup group :-)</html>", EmptyIcon, Alignment.Left) {
         //font = (font.deriveFont(font.getStyle() | java.awt.Font.BOLD))
         //name = ("homepageLabel") // NOI18N
       }, gbc)
 
       gbc.grid = (2, 0)
       add(new Label("",
-        new ImageIcon(getClass.getResource("resources/px128ams-scala.png")), Alignment.Trailing) {
+        TilesSolverApp.getImageByPartialPath("resources/px128ams-scala.png"), Alignment.Trailing) {
         //name = ("appVersionLabel") // NOI18N
       }, gbc)
       /*

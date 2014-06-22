@@ -3,7 +3,7 @@ package tilessolver
 
 import java.awt.event.KeyEvent
 import java.awt.Toolkit
-import javax.swing.{ ImageIcon, KeyStroke }
+import javax.swing.KeyStroke
 import scala.swing.{ AbstractButton, Action, CheckBox }
 import scala.swing.{ Menu, MenuBar, MenuItem, Separator }
 import scala.swing.Swing.{ EmptyIcon, HGlue }
@@ -88,7 +88,7 @@ object ViewMenu extends MenuUtils {
         menuItemFactory(
           s"${t("E&xit")} ${TilesSolverApp.applicationShort}",
           { sys.exit }, None,
-          new ImageIcon(getClass.getResource("/resources/px-16gnome_application_exit.png"))))
+          TilesSolverApp.getImageByPartialPath("/resources/px-16gnome_application_exit.png")))
     }
 
     // Edit menu
@@ -110,9 +110,8 @@ object ViewMenu extends MenuUtils {
       mutateTextNmeIcon(this, t("&Tiles"))
       contents.append(menuItemFactory(t("Asse&gnazione originale di Fabio"),
         Model.changeInput(TilesSolver.fabioPhoto),
-        Some(KeyStroke.getKeyStroke(KeyEvent.VK_1, shortcutKeyMask)) //
-        , //
-        new ImageIcon(getClass.getResource("resources/px-20ticofab.png"))),
+        Some(KeyStroke.getKeyStroke(KeyEvent.VK_1, shortcutKeyMask)),
+        TilesSolverApp.getImageByPartialPath("resources/px-20ticofab.png")),
         menuItemFactory(t("&Missing tiles due to overlaps"),
           Model.changeInput(TilesSolver.missingsTileOverlap),
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))),
