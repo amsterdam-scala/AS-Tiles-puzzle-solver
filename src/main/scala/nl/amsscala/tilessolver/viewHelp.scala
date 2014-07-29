@@ -7,7 +7,7 @@ import scala.swing.Swing.EmptyIcon
 
 protected class ViewHelp extends Dialog {
 
-  title = (s"Help - ${TilesSolverApp.applicationShort}")
+  title = s"Help - ${TilesSolverApp.applicationShort}"
 
   resizable = false
   this.peer.setIconImage(toolkit.getImage(getClass.getResource("resources/px-32ams-scala.png")))
@@ -47,7 +47,7 @@ protected class ViewAboutBox extends Dialog {
 
       gbc.grid = (1, 0)
       add(new Label(TilesSolverApp.applicationTitle, EmptyIcon, Alignment.Left) {
-        font = (font.deriveFont(font.getStyle() | java.awt.Font.BOLD, font.getSize() + 4))
+        font = font.deriveFont(font.getStyle | java.awt.Font.BOLD, font.getSize + 4)
         //name = ("appTitleLabel") // NOI18N
       }, gbc)
 

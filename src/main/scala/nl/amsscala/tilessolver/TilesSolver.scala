@@ -26,7 +26,7 @@ object TilesSolver {
         val candidates: TilesToUse = distinctTilesNotEndingInTheMiddle,
         val outHand: Chain = Nil) {
       /** Test if the chain is complete */
-      def isCompletedTileChain = !outHand.isEmpty && (outHand.head.start == C)
+      def isCompletedTileChain = outHand.nonEmpty && (outHand.head.start == C)
 
       /** Function handles the case of an adjacent tile
        *  Meanly by transferring found tile out the onHand List to the outHand List.
@@ -81,7 +81,7 @@ object TilesSolver {
     if (chain.isEmpty) Nil else
       chain.tail.scanLeft[LayedTile, List[LayedTile]]((0, 0), (chain.head, 0)) {
         (layedTile, scannedTile) =>
-          ((layedTile._2._1.whereNext(layedTile._1)), (scannedTile, layedTile._2._2 + 1))
+          (layedTile._2._1.whereNext(layedTile._1), (scannedTile, layedTile._2._2 + 1))
       }
 
   /** Remove the solutions with double tiles on one place
@@ -89,7 +89,7 @@ object TilesSolver {
    *  Done by the keySET of a map where no double keys are possible.
    */
   def filterRealSolutions(rawSolutions: Set[Chain], unFiltered: Boolean) =
-    rawSolutions.filter(p => (unFiltered || p.lengthCompare(virtualTilesLayouter(p).toMap.size) <= 0))
+    rawSolutions.filter(p => unFiltered || p.lengthCompare(virtualTilesLayouter(p).toMap.size) <= 0)
 
   /** Find tile positions which are overlaid */
   def findOverlayedPositions(layout: List[LayedTile]) =

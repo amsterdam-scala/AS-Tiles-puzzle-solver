@@ -48,10 +48,9 @@ trait View extends SimpleSwingApplication {
     try {
       new ImageIcon(path)
     } catch {
-      case t: Throwable => {
-        println(s"$t: ${partPath} not found")
+      case t: Throwable =>
+        println(s"$t: $partPath not found")
         throw new ExceptionInInitializerError("Resource not found")
-      }
     }
   }
 
@@ -77,8 +76,8 @@ trait View extends SimpleSwingApplication {
       } else NO_SUCH_PAGE
     }
 
-    def doPrint {
-      val job = PrinterJob.getPrinterJob()
+    def doPrint() {
+      val job = PrinterJob.getPrinterJob
       job.setPrintable(this)
       if (job.printDialog()) job.print()
     }
@@ -95,7 +94,7 @@ trait View extends SimpleSwingApplication {
       } yield new Button {
         def butFingerprint(x: Directi, y: Directi): Option[Tile] = {
           val ret = if (x == y) (None, blancImg) else (Option(Tile(x, y)), getTileImage(Tile(x, y)))
-          tooltip = ret._1.getOrElse(None).toString()
+          tooltip = ret._1.getOrElse(None).toString
           icon = ret._2
           ret._1 // Return tile
         } // def butFingerprint
@@ -107,11 +106,10 @@ trait View extends SimpleSwingApplication {
 
         listenTo(mouse.clicks)
         reactions += {
-          case click: event.MouseClicked if tile.isDefined => {
+          case click: event.MouseClicked if tile.isDefined =>
             Model.changeInput(Model.givenTiles ++ List(tile.get))
-          } // event.MouseClicked
         }
-      } // for yield & def buttonsSeq 
+      } // for yield & def buttonsSeq
 
       contents ++= buttonsSeq
     } // def tileBoard
@@ -130,17 +128,17 @@ trait View extends SimpleSwingApplication {
 
     ///////////////////////// Start of ui //////////////////////////////////////
 
-    if (!toolbar.isEmpty) add(toolbar.get, BorderPanel.Position.North)
+    if (toolbar.nonEmpty) add(toolbar.get, BorderPanel.Position.North)
     layout(mainPanel) = BorderPanel.Position.Center
     layout(statusBar) = BorderPanel.Position.South
   } // def ui
 
-  override def top() = new MainFrame {
+  override def top = new MainFrame {
     title = applicationTitle
     iconImage = toolkit.getImage(getClass.getResource("resources/px-32ams-scala.png"))
     menuBar = ViewMenu.menuBar
     contents = ui()
-    centerOnScreen
+    centerOnScreen()
   }
 }
 
@@ -180,14 +178,14 @@ object Control {
     val (tiles2D, overlayPos) = (tiles2dRaw.toMap, TilesSolver.findOverlayedPositions(tiles2dRaw))
 
     lblStatusField.text =
-      s"Found ${solutions} potential solution(s), ${nAllLongestSolutions} are the longest, all ${longestLen} long, overlaps: ${overlayPos.size}."
+      s"Found $solutions potential solution(s), $nAllLongestSolutions are the longest, all $longestLen long, overlaps: ${overlayPos.size}."
 
     mainPanel.contents(4).visible = false // This does the trick of redraw the outputGrid
     mainPanel.contents(4) =
       if (longestLen == 0) { output.text = ""; new BoxPanel(Orientation.Vertical) /*Clear text box*/ }
       else {
         output.text = tiles2D.toList.sortBy { case (coord, tileWithSerialN) => tileWithSerialN._2 }.
-          map { case (coord, tileWithSerialN) => s"${coord} ${tileWithSerialN._1}" }.mkString("\n")
+          map { case (coord, tileWithSerialN) => s"$coord ${tileWithSerialN._1}" }.mkString("\n")
         placeTilesInGrid(tiles2D, overlayPos)
       }
   } // def displaySelected
@@ -203,7 +201,7 @@ object Control {
     given.text = Model.givenTiles.mkString("\n")
 
     ViewMenu.buildSolutionsMenu(solutions.size, longestLen, allLongestSolutions.size, allLongestSolutions)
-    mainPanel.cursor = Cursor.getDefaultCursor()
+    mainPanel.cursor = Cursor.getDefaultCursor
   }
 } // object Control
 

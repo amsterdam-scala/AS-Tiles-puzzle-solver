@@ -36,7 +36,7 @@ trait MenuUtils {
     pComp.action = Action(mnuItemText) { pActionBlock }
 
     // Mutate component
-    if (mne.hasNext) pComp.mnemonic = Key.withName((mne.next.last).toUpper.toString)
+    if (mne.hasNext) pComp.mnemonic = Key.withName(mne.next().last.toUpper.toString)
     if (!pComp.isInstanceOf[CheckBox]) pComp.icon = pIcon
     pComp.action.accelerator = pAccelerator
   }
@@ -51,7 +51,7 @@ trait MenuUtils {
 } // trait MenuUtils
 
 object ViewMenu extends MenuUtils {
-  private final val shortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+  private final val shortcutKeyMask = Toolkit.getDefaultToolkit.getMenuShortcutKeyMask
   private val solutionsMenu = new Menu("") { mutateTextNmeIcon(this, t("&Solutions")); enabled = false }
 
   private val chkSorted = new CheckBox() {
@@ -62,7 +62,7 @@ object ViewMenu extends MenuUtils {
 
   def buildSolutionsMenu(nSolution: Int, longestLen: Int, nAllLongestSolutions: Int, solutions: Set[Chain]) = {
     solutionsMenu.enabled = solutions.size > 1
-    solutionsMenu.contents.clear
+    solutionsMenu.contents.clear()
     solutionsMenu.contents ++=
       (for (elem <- solutions.zipWithIndex.view) yield {
         menuItemFactory(t(s"Solution &${elem._2 + 1}"),
@@ -82,12 +82,12 @@ object ViewMenu extends MenuUtils {
         menuItemFactory(t("&New"), { Model.changeInput(Nil) },
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutKeyMask))),
         new Separator,
-        menuItemFactory(t("&Print"), { TilesSolverApp.mainPanel.doPrint },
+        menuItemFactory(t("&Print"), { TilesSolverApp.mainPanel.doPrint() },
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutKeyMask))),
         new Separator,
         menuItemFactory(
           s"${t("E&xit")} ${TilesSolverApp.applicationShort}",
-          { sys.exit }, None,
+          { sys.exit() }, None,
           TilesSolverApp.getImageByPartialPath("/resources/px-16gnome_application_exit.png")))
     }
 
@@ -105,7 +105,6 @@ object ViewMenu extends MenuUtils {
     }
 
     // Tiles menu
-    import Directions.{ C, N, E, S, W }
     contents += new Menu("") {
       mutateTextNmeIcon(this, t("&Tiles"))
       contents.append(menuItemFactory(t("Asse&gnazione originale di Fabio"),

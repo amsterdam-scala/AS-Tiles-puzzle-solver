@@ -70,7 +70,7 @@ package object tilessolver {
    *  @param	end	The to or outgoing side of tile (arrowhead)
    *  @throws	java.lang.IllegalArgumentException If start and end are the same.
    */
-  case class Tile(val start: Directi, end: Directi) {
+  case class Tile(start: Directi, end: Directi) {
     require(start != end, s"Not a proper tile definition, given $start, $end are the same.")
 
     def whereNext(ori: (Int, Int)): (Int, Int) = this.end.step(ori)
