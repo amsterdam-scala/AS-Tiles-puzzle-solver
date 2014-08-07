@@ -33,7 +33,6 @@ trait View extends SimpleSwingApplication {
   final val applicationTitle = "Tiles Puzzle Solver"
   final val applicationShort = "Tiles solver"
   final val blancImg = getImageByPartialPath("resources/TileXX.png")
-
   final val dim = (42, 42)
 
   val (given, middle, output) =
@@ -191,9 +190,7 @@ object Control {
   } // def displaySelected
 
   def updateMiddle() {
-
     val solutions = TilesSolver.filterRealSolutions(Model.rawSolutions, !ViewMenu.chkNoOverlap.selected)
-
     val longestLen = solutions.foldLeft(0)(_ max _.size)
     // Get the longest paths
     val allLongestSolutions = solutions.filter(_.size >= longestLen)

@@ -45,7 +45,7 @@ package object tilessolver {
       /** Test if the sides of titles pair could be adjacent.
        *  The function returns true if the ending side meets a legal terminating side.
        */
-      def isJoinable(adjacent: Directi) = (this != C) && adjacent == allowedAdjacent
+      def isJoinable = (this != C) && (_: Directi) == allowedAdjacent
 
       /** Given this Direction and the coordinate compute the coordinate of the next tile.*/
       def step(ori: (Int, Int)): (Int, Int) = {

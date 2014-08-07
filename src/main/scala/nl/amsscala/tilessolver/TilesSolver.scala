@@ -92,8 +92,8 @@ object TilesSolver {
     rawSolutions.filter(p => unFiltered || p.lengthCompare(virtualTilesLayouter(p).toMap.size) <= 0)
 
   /** Find tile positions which are overlaid */
-  def findOverlayedPositions(layout: List[LayedTile]) =
-    layout.groupBy(_._1).filter { case (coord, grouplist) => grouplist.lengthCompare(1) > 0 }.keySet
+  def findOverlayedPositions =
+    (_: List[LayedTile]).groupBy(_._1).filter { case (coord, grouplist) => grouplist.lengthCompare(1) > 0 }.keySet
 
   /** Compute the extremes, Least Top Left and the Most Bottom Right in one go */
   def calculateExtremes(toDraw: Map[(Int, Int), (Tile, Int)]): ((Int, Int), (Int, Int)) =
