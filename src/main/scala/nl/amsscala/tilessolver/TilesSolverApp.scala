@@ -1,20 +1,20 @@
 package nl.amsscala
 package tilessolver
 
-import java.awt.{ Cursor, Graphics }
-import java.awt.print.{ PageFormat, Printable, PrinterJob }
-import java.awt.print.Printable.{ NO_SUCH_PAGE, PAGE_EXISTS }
-import javax.swing.ImageIcon
-import scala.swing.{ BorderPanel, BoxPanel, Button, Component, event }
-import scala.swing.{ FlowPanel, GridPanel, Label, MainFrame, Orientation }
-import scala.swing.{ Panel, ScrollPane, SimpleSwingApplication, TextArea }
-import scala.swing.Swing.{ pair2Dimension, VGlue }
+import java.awt.print.Printable.{NO_SUCH_PAGE, PAGE_EXISTS}
+import java.awt.print.{PageFormat, Printable, PrinterJob}
+import java.awt.{Cursor, Graphics}
 import java.net.URL
+import javax.swing.ImageIcon
+
+import scala.swing.Swing.{VGlue, pair2Dimension}
+import scala.swing.{BorderPanel, BoxPanel, Button, Component, FlowPanel, GridPanel, Label, MainFrame, Orientation, Panel, ScrollPane, SimpleSwingApplication, TextArea, event}
 
 object Model {
   var rawSolutions: Set[Chain] = Set()
 
   private var givenTiles_ : TilesToUse = Nil
+
   def givenTiles = givenTiles_
 
   def changeInput(tiles: TilesToUse) {
@@ -36,9 +36,15 @@ trait View extends SimpleSwingApplication {
   final val dim = (42, 42)
 
   val (given, middle, output) =
-    (new TextArea("Given tiles", 14, 10) { editable = false },
-      new TextArea("Combination", 12, 10) { editable = false },
-      new TextArea("Tessellation", 14, 16) { editable = false })
+    (new TextArea("Given tiles", 14, 10) {
+      editable = false
+    },
+      new TextArea("Combination", 12, 10) {
+        editable = false
+      },
+      new TextArea("Tessellation", 14, 16) {
+        editable = false
+      })
 
   def getImageByPartialPath(partPath: String) =
     getImageByFullPath(partPath, resourceFromClassloader(partPath))
@@ -55,13 +61,20 @@ trait View extends SimpleSwingApplication {
 
   val mainPanel = new BoxPanel(Orientation.Horizontal) with Printable {
     contents += tileBoard
-    contents += new ScrollPane(given) { horizontalScrollBarPolicy = scala.swing.ScrollPane.BarPolicy.Never }
-    contents += new ScrollPane(middle) { horizontalScrollBarPolicy = scala.swing.ScrollPane.BarPolicy.Never }
-    contents += new ScrollPane(output) { horizontalScrollBarPolicy = scala.swing.ScrollPane.BarPolicy.Never }
+    contents += new ScrollPane(given) {
+      horizontalScrollBarPolicy = scala.swing.ScrollPane.BarPolicy.Never
+    }
+    contents += new ScrollPane(middle) {
+      horizontalScrollBarPolicy = scala.swing.ScrollPane.BarPolicy.Never
+    }
+    contents += new ScrollPane(output) {
+      horizontalScrollBarPolicy = scala.swing.ScrollPane.BarPolicy.Never
+    }
     contents += new BoxPanel(Orientation.Vertical)
 
     protected def print(g: Graphics, pf: PageFormat, page: Int) = {
-      if (page <= 0) { /* We have only one page, and 'page' is zero-based */
+      if (page <= 0) {
+        /* We have only one page, and 'page' is zero-based */
 
         /* User (0,0) is typically outside the imageable area, so we must
          * translate by the X and Y values in the PageFormat to avoid clipping
@@ -91,24 +104,24 @@ trait View extends SimpleSwingApplication {
         x <- Directions.values.view // Without view it would be in disorder
         y <- Directions.values.view
       } yield new Button {
-        def butFingerprint(x: Directi, y: Directi): Option[Tile] = {
-          val ret = if (x == y) (None, blancImg) else (Option(Tile(x, y)), getTileImage(Tile(x, y)))
-          tooltip = ret._1.getOrElse(None).toString
-          icon = ret._2
-          ret._1 // Return tile
-        } // def butFingerprint
+          def butFingerprint(x: Directi, y: Directi): Option[Tile] = {
+            val ret = if (x == y) (None, blancImg) else (Option(Tile(x, y)), getTileImage(Tile(x, y)))
+            tooltip = ret._1.getOrElse(None).toString
+            icon = ret._2
+            ret._1 // Return tile
+          } // def butFingerprint
 
-        val tile = butFingerprint(x.asInstanceOf[Directi], y.asInstanceOf[Directi])
-        minimumSize = dim
-        preferredSize = minimumSize
-        maximumSize = minimumSize
+          val tile = butFingerprint(x.asInstanceOf[Directi], y.asInstanceOf[Directi])
+          minimumSize = dim
+          preferredSize = minimumSize
+          maximumSize = minimumSize
 
-        listenTo(mouse.clicks)
-        reactions += {
-          case click: event.MouseClicked if tile.isDefined =>
-            Model.changeInput(Model.givenTiles ++ List(tile.get))
-        }
-      } // for yield & def buttonsSeq
+          listenTo(mouse.clicks)
+          reactions += {
+            case click: event.MouseClicked if tile.isDefined =>
+              Model.changeInput(Model.givenTiles ++ List(tile.get))
+          }
+        } // for yield & def buttonsSeq
 
       contents ++= buttonsSeq
     } // def tileBoard
@@ -142,6 +155,7 @@ trait View extends SimpleSwingApplication {
 }
 
 object Control {
+
   import TilesSolverApp._
 
   /** Place tiles in a grid */
@@ -157,15 +171,18 @@ object Control {
               y <- mostTopLeft._2 to mostBottomRight._2
               x <- mostTopLeft._1 to mostBottomRight._1
             } yield new Button {
-              focusable = false
-              minimumSize = dim
-              preferredSize = dim
+                focusable = false
+                minimumSize = dim
+                preferredSize = dim
 
-              val tile = toDraw.get(x, y)
-              if (overlayPos.contains((x, y))) background = java.awt.Color.RED
-              icon = if (tile.isDefined) { tooltip = tile.get.toString(); getTileImage(tile.get._1) }
-              else blancImg
-            })
+                val tile = toDraw.get(x, y)
+                if (overlayPos.contains((x, y))) background = java.awt.Color.RED
+                icon = if (tile.isDefined) {
+                  tooltip = tile.get.toString()
+                  getTileImage(tile.get._1)
+                }
+                else blancImg
+              })
           }
         contents ++= List(VGlue)
       }
@@ -181,10 +198,13 @@ object Control {
 
     mainPanel.contents(4).visible = false // This does the trick of redraw the outputGrid
     mainPanel.contents(4) =
-      if (longestLen == 0) { output.text = ""; new BoxPanel(Orientation.Vertical) /*Clear text box*/ }
+      if (longestLen == 0) {
+        output.text = ""
+        new BoxPanel(Orientation.Vertical) /*Clear text box*/
+      }
       else {
-        output.text = tiles2D.toList.sortBy { case (coord, tileWithSerialN) => tileWithSerialN._2 }.
-          map { case (coord, tileWithSerialN) => s"$coord ${tileWithSerialN._1}" }.mkString("\n")
+        output.text = tiles2D.toList.sortBy { case (coord, tileWithSerialN) => tileWithSerialN._2}.
+          map { case (coord, tileWithSerialN) => s"$coord ${tileWithSerialN._1}"}.mkString("\n")
         placeTilesInGrid(tiles2D, overlayPos)
       }
   } // def displaySelected
@@ -200,6 +220,8 @@ object Control {
     ViewMenu.buildSolutionsMenu(solutions.size, longestLen, allLongestSolutions.size, allLongestSolutions)
     mainPanel.cursor = Cursor.getDefaultCursor
   }
-} // object Control
+}
+
+// object Control
 
 object TilesSolverApp extends View

@@ -1,13 +1,10 @@
 package nl.amsscala
 package tilessolver
 
-import org.scalatest
 import org.scalatest.{ FunSpec, GivenWhenThen }
 import scala.collection.parallel.immutable.ParSeq
-import org.scalatest.junit.JUnitRunner
 
 /** @author A'dam Scala Tiles-puzzle-solver team */
-
 class TilesSolverSuite extends FunSpec with GivenWhenThen {
 
   import Directions.{ C, N, E, S, W }
@@ -208,7 +205,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
         Set(List(Tile(C, E), Tile(W, E), Tile(W, C)), List(Tile(C, E), Tile(W, C)))))
     }
 
-    /*info("This is the heavy one. 10 minutes?")
+    info("This is the heavy one. 10 minutes?")
      Given("the exact example of the site all permutations (1.814.400)")
       TilesSolver.fabioPhoto.permutations.foreach(casus => assert(TilesSolver.findChains(casus) ===
         Set(List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, C)),
@@ -223,6 +220,5 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
           List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)),
           List(Tile(C, E), Tile(W, E), Tile(W, C)),
           List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)))))
-    }*/
   } // describe
 }

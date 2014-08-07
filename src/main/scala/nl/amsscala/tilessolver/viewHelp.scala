@@ -1,12 +1,10 @@
 package nl.amsscala
 package tilessolver
 
-import scala.swing.{ Action, Alignment, BorderPanel, Button, Dialog }
-import scala.swing.{ GridBagPanel, Label, Swing }
 import scala.swing.Swing.EmptyIcon
+import scala.swing.{Action, Alignment, BorderPanel, Button, Dialog, GridBagPanel, Label, Swing}
 
 protected class ViewHelp extends Dialog {
-
   title = s"Help - ${TilesSolverApp.applicationShort}"
 
   resizable = false
@@ -16,7 +14,9 @@ protected class ViewHelp extends Dialog {
     layout(new GridBagPanel {
       add(new Label("",
         TilesSolverApp.getImageByPartialPath("resources/TilesRules.png"), Alignment.Center) {},
-        new Constraints { /*grid =*/ (0, 0) })
+        new Constraints {
+          /*grid =*/ (0, 0)
+        })
     }) = BorderPanel.Position.Center
   }
 
@@ -25,7 +25,6 @@ protected class ViewHelp extends Dialog {
 }
 
 protected class ViewAboutBox extends Dialog {
-
   title = s"About ${TilesSolverApp.applicationShort}"
   modal = true
   resizable = false
@@ -52,7 +51,8 @@ protected class ViewAboutBox extends Dialog {
       }, gbc)
 
       gbc.grid = (1, 5)
-      add(new Label("<html>Dedicated to Fabio, who can find only<br>friends inside the Scala Meetup group :-)</html>", EmptyIcon, Alignment.Left) {
+      add(new Label("<html>Dedicated to Fabio, who can find only<br>friends inside the Scala Meetup group :-)</html>",
+        EmptyIcon, Alignment.Left) {
         //font = (font.deriveFont(font.getStyle() | java.awt.Font.BOLD))
         //name = ("homepageLabel") // NOI18N
       }, gbc)
@@ -75,9 +75,11 @@ protected class ViewAboutBox extends Dialog {
 
       gbc.grid = (2, 5)
       gbc.fill = scala.swing.GridBagPanel.Fill.None
-      add(new Button(Action("Close about Box") { dispose() }), gbc)
+      add(new Button(Action("Close about Box") {
+        dispose()
+      }), gbc)
     }) = BorderPanel.Position.Center
   }
   centerOnScreen()
   open()
-}
+} // class ViewAboutBox
