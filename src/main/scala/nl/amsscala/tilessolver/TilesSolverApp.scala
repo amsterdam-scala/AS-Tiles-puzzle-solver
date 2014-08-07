@@ -76,14 +76,10 @@ trait View extends SimpleSwingApplication {
       if (page <= 0) {
         /* We have only one page, and 'page' is zero-based */
 
-        /* User (0,0) is typically outside the imageable area, so we must
-         * translate by the X and Y values in the PageFormat to avoid clipping
-         */
         /* Now print the window and its visible contents */
         this.peer.printAll(g)
 
         /* tell the caller that this page is part of the printed document */
-
         PAGE_EXISTS
       } else NO_SUCH_PAGE
     }
@@ -220,8 +216,6 @@ object Control {
     ViewMenu.buildSolutionsMenu(solutions.size, longestLen, allLongestSolutions.size, allLongestSolutions)
     mainPanel.cursor = Cursor.getDefaultCursor
   }
-}
-
-// object Control
+} // object Control
 
 object TilesSolverApp extends View
