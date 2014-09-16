@@ -205,7 +205,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
         Set(List(Tile(C, E), Tile(W, E), Tile(W, C)), List(Tile(C, E), Tile(W, C)))))
     }
 
-    /*info("This is the heavy one. 10 minutes?")
+    info("This is the heavy one. 10 minutes?")
      Given("the exact example of the site all permutations (1.814.400)")
       TilesSolver.fabioPhoto.permutations.foreach(casus => assert(TilesSolver.findChains(casus) ===
         Set(List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, C)),
@@ -219,6 +219,6 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
           List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, C)),
           List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)),
           List(Tile(C, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)))))*/
+          List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)))))
   } // describe
 }
