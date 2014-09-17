@@ -29,8 +29,6 @@ protected class ViewAboutBox extends Dialog {
   modal = true
   resizable = false
 
-  scala.util.Properties.versionString
-
   contents = new BorderPanel {
     border = Swing.EmptyBorder(20, 20, 20, 20)
 
@@ -60,7 +58,7 @@ protected class ViewAboutBox extends Dialog {
       }, gbc)
 
       gbc.grid = (2, 0)
-      add(new Label("<html>Scala runtime<br>" +scala.util.Properties.versionString + "</html>",
+      add(new Label("<html>Scala runtime<br>" + scala.util.Properties.versionString + "</html>",
         TilesSolverApp.getImageByPartialPath("resources/px128ams-scala.png"), Alignment.Trailing) {
       }, gbc)
       /*

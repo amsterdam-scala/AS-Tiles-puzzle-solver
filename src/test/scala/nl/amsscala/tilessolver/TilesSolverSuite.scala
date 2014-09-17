@@ -1,13 +1,13 @@
 package nl.amsscala
 package tilessolver
 
-import org.scalatest.{ FunSpec, GivenWhenThen }
+import org.scalatest.{FunSpec, GivenWhenThen}
 import scala.collection.parallel.immutable.ParSeq
 
 /** @author A'dam Scala Tiles-puzzle-solver team */
 class TilesSolverSuite extends FunSpec with GivenWhenThen {
 
-  import Directions.{ C, N, E, S, W }
+  import Directions.{C, N, E, S, W}
 
   val cases = ParSeq(Nil,
     List(Tile(W, C)),
@@ -36,7 +36,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
 
     it("should result in a set with one empty chain") {
       Given("an empty list")
-      assertResult(Set()) { TilesSolver.findChains(cases(0)) }
+      assertResult(Set())(TilesSolver.findChains(cases(0)))
 
       Given("single tile West Center")
       assertResult(Set())(TilesSolver.findChains(cases(1)))
@@ -98,7 +98,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
 
     it("given the example of the site should still result in a set of chains") {
       assert(TilesSolver.findChains(TilesSolver.fabioPhoto) ===
-        Set( //
+        Set(//
           List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)), //
           List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)), //
           List(Tile(C, E), Tile(W, S), Tile(N, E), Tile(W, C)), //
@@ -188,7 +188,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
 
     it("should compute the extreme dimensions for a craziest layout") {
       Given("modified example")
-      assert(TilesSolver.calculateExtremes(craziestLayout.toMap) === ((0, -2), (2, 0)))
+      assert(TilesSolver.calculateExtremes(craziestLayout.toMap) ===((0, -2), (2, 0)))
     }
 
     it("should find the double tile positions") {
@@ -205,20 +205,20 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
         Set(List(Tile(C, E), Tile(W, E), Tile(W, C)), List(Tile(C, E), Tile(W, C)))))
     }
 
-    info("This is the heavy one. 10 minutes?")
-     Given("the exact example of the site all permutations (1.814.400)")
-      TilesSolver.fabioPhoto.permutations.foreach(casus => assert(TilesSolver.findChains(casus) ===
-        Set(List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, C)),
-          List(Tile(C, E), Tile(W, S), Tile(N, C)),
-          List(Tile(C, E), Tile(W, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, S), Tile(N, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, C)),
-          List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, C)),
-          List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, E), Tile(W, C)),
-          List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)))))
+/*    info("This is the heavy one. 10 minutes?")
+    Given("the exact example of the site all permutations (1.814.400)")
+    TilesSolver.fabioPhoto.permutations.foreach(casus => assert(TilesSolver.findChains(casus) ===
+      Set(List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, C)),
+        List(Tile(C, E), Tile(W, S), Tile(N, C)),
+        List(Tile(C, E), Tile(W, S), Tile(N, E), Tile(W, C)),
+        List(Tile(C, E), Tile(W, S), Tile(N, E), Tile(W, E), Tile(W, C)),
+        List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, E), Tile(W, C)),
+        List(Tile(C, E), Tile(W, C)),
+        List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, E), Tile(W, C)),
+        List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, C)),
+        List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, C)),
+        List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)),
+        List(Tile(C, E), Tile(W, E), Tile(W, C)),
+        List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)))))*/
   } // describe
 }

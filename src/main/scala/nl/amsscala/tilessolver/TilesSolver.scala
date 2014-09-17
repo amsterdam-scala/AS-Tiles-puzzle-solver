@@ -115,4 +115,5 @@ object TilesSolver {
   def missingsTileOverlap = List(Tile(C, E), Tile(N, S), Tile(S, N), Tile(W, S), Tile(N, W), Tile(E, N), Tile(S, C))
 
   def crazyExample = modifiedExample ++ List(Tile(C, N), Tile(W, N))
+
 } // object TilesSolver

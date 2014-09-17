@@ -216,6 +216,7 @@ object Control {
     ViewMenu.buildSolutionsMenu(solutions.size, longestLen, allLongestSolutions.size, allLongestSolutions)
     mainPanel.cursor = Cursor.getDefaultCursor
   }
+
 } // object Control
 
 object TilesSolverApp extends View

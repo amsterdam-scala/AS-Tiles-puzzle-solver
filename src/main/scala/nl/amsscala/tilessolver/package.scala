@@ -62,6 +62,7 @@ package object tilessolver {
         }
       }
     }
+
   } // object Directions
 
   /** Descriptor for a tile, direction indicated with a arrow
@@ -74,4 +75,5 @@ package object tilessolver {
 
     def whereNext(ori: (Int, Int)): (Int, Int) = this.end.step(ori)
   }
-}
+
+} // package tilesolver

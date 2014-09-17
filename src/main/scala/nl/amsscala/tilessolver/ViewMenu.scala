@@ -22,15 +22,15 @@ trait MenuUtils {
 
     /** The mnemonic character is the first character after an ampersand character (&) in the text
       * of the MenuItem. This function will not return a mnemonic if two ampersand characters are
-      * placed together as the ampersands are used to display an ampersand in the text of the
+      * placed together as this will be used to display an ampersand in the text of the
       * MenuItem instead of defining a mnemonic character.
-      * The function returns a kind of mnemonic character / text pair.
+      * The function returns a mnemonic character/text pair.
       */
     val (mne, mnuItemText) = {
       val text = t(pActionTitleResourceText)
       // The mnemonic parser, filter by the mnemonic character(s) and text
-      (text.replaceAll("&&", "").sliding(2).filter(_.init == "&").take(1),
-        "&[^&]".r.replaceAllIn(text, _.matched.tail)) // Filter the ampersands
+      (text.replaceAll("&&", "").sliding(2).filter(_.init == "&").take(1), // Mnemonic member of pair
+        "&[^&]".r.replaceAllIn(text, _.matched.tail)) // Item text part of pair
     }
 
     pComp.action = Action(mnuItemText) {
@@ -41,7 +41,7 @@ trait MenuUtils {
     if (mne.hasNext) pComp.mnemonic = Key.withName(mne.next().last.toUpper.toString)
     if (!pComp.isInstanceOf[CheckBox]) pComp.icon = pIcon
     pComp.action.accelerator = pAccelerator
-  }
+  }  // def mutateTextNmeIcon
 
   protected def menuItemFactory(
                                  pActionTitleResourceText: String,
@@ -52,7 +52,7 @@ trait MenuUtils {
       mutateTextNmeIcon(this, pActionTitleResourceText, pActionBlock, pAccelerator, pIcon)
     }
   }
-}// trait MenuUtils
+} // trait MenuUtils
 
 object ViewMenu extends MenuUtils {
   private final val shortcutKeyMask = Toolkit.getDefaultToolkit.getMenuShortcutKeyMask
@@ -87,7 +87,7 @@ object ViewMenu extends MenuUtils {
   }
 
   def menuBar: MenuBar = new MenuBar {
-    contents.append(new Menu("") {// File menu
+    contents.append(new Menu("") { // File menu
       mutateTextNmeIcon(this, t("&File"))
       tooltip = "File Tooltip text"
 
@@ -96,29 +96,20 @@ object ViewMenu extends MenuUtils {
           Model.changeInput(Nil),
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutKeyMask))),
         new Separator,
-        menuItemFactory(t("&Print"), {
-          TilesSolverApp.mainPanel.doPrint()
-        },
+        menuItemFactory(t("&Print"), TilesSolverApp.mainPanel.doPrint(),
         Some(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutKeyMask))),
         new Separator,
         menuItemFactory(
-        s"${t("E&xit")} ${TilesSolverApp.applicationShort}", {
-          sys.exit()
-        }, None,
+        s"${t("E&xit")} ${TilesSolverApp.applicationShort}", sys.exit(), None,
         TilesSolverApp.getImageByPartialPath("/resources/px-16gnome_application_exit.png")))
-    }, new Menu("") {// Edit menu
+    }, new Menu("") { // Edit menu
       mutateTextNmeIcon(this, t("&Edit"))
       enabled = false
-    }, new Menu("") {// Edit menu
-      mutateTextNmeIcon(this, t("&Edit"))
-      enabled = false
-    },
-      new Menu("") {// View menu
+    }, new Menu("") { // View menu
         mutateTextNmeIcon(this, t("&View"))
-        //enabled = false
         contents.append(chkSorted)
       },
-      new Menu("") {// Tiles menu
+      new Menu("") { // Tiles menu
         mutateTextNmeIcon(this, t("&Tiles"))
         contents.append(menuItemFactory(t("Asse&gnazione originale di Fabio"),
           Model.changeInput(TilesSolver.fabioPhoto),
@@ -131,15 +122,16 @@ object ViewMenu extends MenuUtils {
           menuItemFactory(t("C&razy example"), Model.changeInput(TilesSolver.crazyExample),
             Some(KeyStroke.getKeyStroke(KeyEvent.VK_3, shortcutKeyMask))))
       }, solutionsMenu, chkNoOverlap, HGlue,
-      new Menu("") {// Window menu
+      new Menu("") { // Window menu
         mutateTextNmeIcon(this, t("&Window"))
         enabled = false
       },
-      new Menu("") {// Help Menu
+      new Menu("") { // Help Menu
         mutateTextNmeIcon(this, t("&Help"))
         contents.append(menuItemFactory(
-        t("Show &help"), new ViewHelp, Some(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0))),
+          t("Show &help"), new ViewHelp, Some(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0))),
           menuItemFactory(t("&About"), new ViewAboutBox))
       })
   } // def menuBar
-}// object ViewMenu
+
+} // object ViewMenu
