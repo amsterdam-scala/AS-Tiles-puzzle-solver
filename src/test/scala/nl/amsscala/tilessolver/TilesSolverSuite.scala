@@ -1,14 +1,15 @@
 package nl.amsscala
 package tilessolver
 
-import org.scalatest.{FunSpec, GivenWhenThen}
+import org.scalatest.prop.TableDrivenPropertyChecks.{Table, forAll}
+import org.scalatest.{FunSpec, GivenWhenThen, Matchers, Tag}
+
 import scala.collection.parallel.immutable.ParSeq
 
 /** @author A'dam Scala Tiles-puzzle-solver team */
-class TilesSolverSuite extends FunSpec with GivenWhenThen {
+class TilesSolverSuite extends FunSpec with GivenWhenThen with Matchers {
 
-  import Directions.{C, N, E, S, W}
-
+  import nl.amsscala.tilessolver.Directions.{C, Directi, E, N, S, W}
   val cases = ParSeq(Nil,
     List(Tile(W, C)),
     List(Tile(C, W)),
@@ -16,48 +17,60 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
     List(Tile(W, E), Tile(W, E)),
     List(Tile(W, E), Tile(E, W)),
     List(Tile(C, E), Tile(E, C)),
-    List(Tile(C, E), Tile(C, E), Tile(E, C)), // 7
+    Nil, // 7
     Nil, //List(Tile(C, E), Tile(E, C), Tile(C, E)),
     List(Tile(N, C), Tile(C, S)), // 9
-    Nil, //List(Tile(C, S), Tile(N, C)),
+    Nil, //
     List(Tile(C, S), Tile(C, S), Tile(N, C)), // 11
     List(Tile(N, C), Tile(N, C), Tile(C, S), Tile(C, S)), //12
     List(Tile(C, S), Tile(N, C), Tile(N, C), Tile(C, S)),
     List(Tile(C, S), Tile(W, C), Tile(N, C), Tile(C, E)))
 
   describe("A solution of the Tile problem") {
+    it("can create a new Tile", Tag("construction")) {
+      Given("A new tile instantiation")
+      When("then end and start points are the same")
+      Then("reject an invalid tile definition")
+      val thrown = intercept[IllegalArgumentException](Tile(C, C))
+      thrown.getMessage should include(" C, C ")
+    }
 
-    it("should reject an invalid tile definition") {
-      val thrown = intercept[java.lang.IllegalArgumentException] {
-        Tile(C, C)
+    it("can create a new Tile ending x") {
+      val displacements = Table(("end", "expect"),
+        (N, (0, -1)),
+        (E, (1, 0)),
+        (S, (0, 1)),
+        (W, (-1, 0)))
+
+      forAll(displacements) { (n: Directi, d: (Int, Int)) =>
+        Tile(C, n).whereNext(0, 0) should be(d)
       }
-      assert(thrown.getMessage === "requirement failed: Not a proper tile definition, given C, C are the same.")
     }
 
     it("should result in a set with one empty chain") {
       Given("an empty list")
-      assertResult(Set())(TilesSolver.findChains(cases(0)))
+      TilesSolver.findChains(Nil) should be('empty)
 
       Given("single tile West Center")
-      assertResult(Set())(TilesSolver.findChains(cases(1)))
+      TilesSolver.findChains(cases(1)) should be('empty)
 
       Given("single tile Center West")
-      assertResult(Set())(TilesSolver.findChains(cases(2)))
+      TilesSolver.findChains(cases(2)) should be('empty)
 
       Given("single tile West East")
-      assertResult(Set())(TilesSolver.findChains(cases(3)))
+      TilesSolver.findChains(cases(3)) should be('empty)
 
       Given("two same tiles")
-      assertResult(Set())(TilesSolver.findChains(cases(4)))
+      TilesSolver.findChains(cases(4)) should be('empty)
 
       Given("two mirrored tiles")
-      assertResult(Set())(TilesSolver.findChains(cases(5)))
+      TilesSolver.findChains(cases(5)) should be('empty)
 
       Given("two mirrored centered tiles")
-      assertResult(Set())(TilesSolver.findChains(cases(6)))
+      TilesSolver.findChains(cases(6)) should be('empty)
 
       Given("three mirrored centered tiles")
-      cases(7).permutations.foreach(casus => assert(TilesSolver.findChains(casus) === Set()))
+      List(Tile(C, W), Tile(C, N), Tile(C, E)).permutations.foreach(TilesSolver.findChains(_) should be('empty))
     }
 
     it("given two correct centered tiles should result in a set of chains") {
@@ -114,7 +127,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
     }
   }
 
-  describe("A solution of the tile layout problem") {
+  describe("Advanced solutions of the tile lay-out problem") {
     it("should layout the tile") {
       Given("a round walk")
       assert(TilesSolver.virtualTilesLayouter(
@@ -198,27 +211,30 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen {
 
   } // describe
 
+
   describe("The last tests are permutations so are processor intensive. 4 or more minutes.") {
     it("should every time the same lists of chains, thus be stable") {
       Given("the modified example of the site all permutations (1.814.400)")
-      TilesSolver.modifiedExample.permutations.foreach(casus => assert(TilesSolver.findChains(casus) ===
+      assert(TilesSolver.modifiedExample.permutations.forall(casus => TilesSolver.findChains(casus) ===
         Set(List(Tile(C, E), Tile(W, E), Tile(W, C)), List(Tile(C, E), Tile(W, C)))))
     }
 
-/*    info("This is the heavy one. 10 minutes?")
-    Given("the exact example of the site all permutations (1.814.400)")
-    TilesSolver.fabioPhoto.permutations.foreach(casus => assert(TilesSolver.findChains(casus) ===
-      Set(List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, C)),
-        List(Tile(C, E), Tile(W, S), Tile(N, C)),
-        List(Tile(C, E), Tile(W, S), Tile(N, E), Tile(W, C)),
-        List(Tile(C, E), Tile(W, S), Tile(N, E), Tile(W, E), Tile(W, C)),
-        List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, E), Tile(W, C)),
-        List(Tile(C, E), Tile(W, C)),
-        List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, E), Tile(W, C)),
-        List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, C)),
-        List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, C)),
-        List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)),
-        List(Tile(C, E), Tile(W, E), Tile(W, C)),
-        List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)))))*/
+    info("This is the heavy one. 10 minutes?")
+    it("the exact example of the site all permutations (1.814.400)") {
+      pending
+      assert(TilesSolver.fabioPhoto.permutations.forall(casus => TilesSolver.findChains(casus) ===
+        Set(List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, C)),
+          List(Tile(C, E), Tile(W, S), Tile(N, C)),
+          List(Tile(C, E), Tile(W, S), Tile(N, E), Tile(W, C)),
+          List(Tile(C, E), Tile(W, S), Tile(N, E), Tile(W, E), Tile(W, C)),
+          List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, E), Tile(W, C)),
+          List(Tile(C, E), Tile(W, C)),
+          List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, E), Tile(W, C)),
+          List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, C)),
+          List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, C)),
+          List(Tile(C, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)),
+          List(Tile(C, E), Tile(W, E), Tile(W, C)),
+          List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, S), Tile(N, E), Tile(W, C)))))
+    }
   } // describe
 }

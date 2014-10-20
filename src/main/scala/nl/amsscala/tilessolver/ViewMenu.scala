@@ -13,17 +13,16 @@ trait MenuUtils {
 
   def t(key: String) = key // Placeholder for resource manager
 
-  protected def mutateTextNmeIcon(
-                                   pComp: AbstractButton,
+  protected def mutateTextNmeIcon( pComp: AbstractButton,
                                    pActionTitleResourceText: String,
                                    pActionBlock: => Unit = {},
                                    pAccelerator: Option[KeyStroke] = None,
                                    pIcon: javax.swing.Icon = EmptyIcon) {
 
     /** The mnemonic character is the first character after an ampersand character (&) in the text
-      * of the MenuItem. This function will not return a mnemonic if two ampersand characters are
-      * placed together as this will be used to display an ampersand in the text of the
-      * MenuItem instead of defining a mnemonic character.
+      * of the MenuItem. This function will skip a mnemonic if two ampersand characters are
+      * placed together as this will be used to display an ampersand in the text of the MenuItem
+      * instead of defining a mnemonic character.
       * The function returns a mnemonic character/text pair.
       */
     val (mne, mnuItemText) = {
@@ -33,15 +32,13 @@ trait MenuUtils {
         "&[^&]".r.replaceAllIn(text, _.matched.tail)) // Item text part of pair
     }
 
-    pComp.action = Action(mnuItemText) {
-      pActionBlock
-    }
+    pComp.action = Action(mnuItemText) {pActionBlock}
 
     // Mutate component
     if (mne.hasNext) pComp.mnemonic = Key.withName(mne.next().last.toUpper.toString)
     if (!pComp.isInstanceOf[CheckBox]) pComp.icon = pIcon
     pComp.action.accelerator = pAccelerator
-  }  // def mutateTextNmeIcon
+  } // def mutateTextNmeIcon
 
   protected def menuItemFactory(
                                  pActionTitleResourceText: String,
@@ -97,18 +94,18 @@ object ViewMenu extends MenuUtils {
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutKeyMask))),
         new Separator,
         menuItemFactory(t("&Print"), TilesSolverApp.mainPanel.doPrint(),
-        Some(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutKeyMask))),
+          Some(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutKeyMask))),
         new Separator,
         menuItemFactory(
-        s"${t("E&xit")} ${TilesSolverApp.applicationShort}", sys.exit(), None,
-        TilesSolverApp.getImageByPartialPath("/resources/px-16gnome_application_exit.png")))
+          s"${t("E&xit")} ${TilesSolverApp.applicationShort}", sys.exit(), None,
+          TilesSolverApp.getImageByPartialPath("/resources/px-16gnome_application_exit.png")))
     }, new Menu("") { // Edit menu
       mutateTextNmeIcon(this, t("&Edit"))
       enabled = false
     }, new Menu("") { // View menu
-        mutateTextNmeIcon(this, t("&View"))
-        contents.append(chkSorted)
-      },
+      mutateTextNmeIcon(this, t("&View"))
+      contents.append(chkSorted)
+    },
       new Menu("") { // Tiles menu
         mutateTextNmeIcon(this, t("&Tiles"))
         contents.append(menuItemFactory(t("Asse&gnazione originale di Fabio"),

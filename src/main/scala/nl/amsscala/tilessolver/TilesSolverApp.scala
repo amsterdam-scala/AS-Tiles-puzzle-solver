@@ -11,6 +11,7 @@ import scala.swing.Swing.{VGlue, pair2Dimension}
 import scala.swing.{BorderPanel, BoxPanel, Button, Component, FlowPanel, GridPanel, Label, MainFrame, Orientation, Panel, ScrollPane, SimpleSwingApplication, TextArea, event}
 
 object Model {
+  type TilesToUse = Chain
   var rawSolutions: Set[Chain] = Set()
 
   private var givenTiles_ : TilesToUse = Nil
@@ -217,6 +218,8 @@ object Control {
     mainPanel.cursor = Cursor.getDefaultCursor
   }
 
-} // object Control
+}
+
+// object Control
 
 object TilesSolverApp extends View

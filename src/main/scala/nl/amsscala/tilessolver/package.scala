@@ -4,16 +4,16 @@ package nl.amsscala
   *
   * Find the longest chain of connected tiles.
   *
-  * Signature is `findChains(tiles: TilesToUse): Set[Chain]`
-  * where `TilesToUse` is an unordered `List[Tile]` and `Chain` is a sequential `List[Tile]`
-  * so `Set[Chain] = Set[List[Tile]]`
+  * Signature is `findChains(tiles: Chain): Set[Chain]`
+  * where `Chain` is a sequential `Seq[Tile]`
+  * so `Set[Chain] = Set[Seq[Tile]]`
   *
   *
   * The first element of a `Chain` holds the start tile and the last element the ending tile.
   *
-  * If we take the left-overs in account the outcome should be: `Set[List[Chain]]` a.k.a. `Set[List[List[Tile]]]`
-  * because with the leftover tiles more coexisting chain(s) could be found, eventually duplicates. E.g.
-  * `Set(List(List(Tile(C,E),Tile(W,C)), List(Tile(C,E),Tile(W,C))))`
+  * If we take the left-overs in account for multiple Chains per solution, the outcome should be:
+  * `Set[Seq[Chain]]` a.k.a. `Set[Seq[Seq[Tile]]]` because with the leftover tiles more coexisting chain(s)
+  * could be found, eventually duplicates. E.g. `Set(List(Seq(Tile(C,E),Tile(W,C)), Seq(Tile(C,E),Tile(W,C))))`
   *
   * But this has to be left for a future exercise.
   *
@@ -22,19 +22,15 @@ package nl.amsscala
 
 package object tilessolver {
   /** A sequential List of a valid combination of tiles in fixed positions expresses a candidate solution. */
-  type Chain = List[Tile]
-  /** An unordered list of tiles, commonly the items in hand to combine with. */
-  type TilesToUse = Chain
+  type Chain = Seq[Tile]
+
   /** A tile with a computed position and serial number */
   type LayedTile = ((Int, Int), (Tile, Int /*Serial number */ ))
 
   /** Enumeration of the connection side of a tile */
   object Directions extends Enumeration {
-    type Directions = Directi
-    /** Side names of Tiles as a enumeration */
-    final val C, N, E, S, W = Directi()
-
-    // Center, North, East, South ...
+    /** Side names of Tiles as an enumeration */
+    final val C, N, E, S, W = Directi() // Center, North, East, South ...
 
     case class Directi() extends Val {
       /** Returns allowed tile side chain-joint. */
@@ -61,7 +57,7 @@ package object tilessolver {
           case _ => (ori._1, ori._2) // stationary
         }
       }
-    }
+    } // case class Directi()
 
   } // object Directions
 
@@ -73,7 +69,7 @@ package object tilessolver {
   case class Tile(start: Directions.Directi, end: Directions.Directi) {
     require(start != end, s"Not a proper tile definition, given $start, $end are the same.")
 
-    def whereNext(ori: (Int, Int)): (Int, Int) = this.end.step(ori)
+    def whereNext(ori: (Int, Int)): (Int, Int) = end.step(ori)
   }
 
 } // package tilesolver
