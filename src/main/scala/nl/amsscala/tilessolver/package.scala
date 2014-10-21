@@ -24,8 +24,9 @@ package object tilessolver {
   /** A sequential List of a valid combination of tiles in fixed positions expresses a candidate solution. */
   type Chain = Seq[Tile]
 
+  type Coord = (Int, Int) // Coordinate
   /** A tile with a computed position and serial number */
-  type LayedTile = ((Int, Int), (Tile, Int /*Serial number */ ))
+  type LayedTile = (Coord, (Tile, Int /*Serial number */ ))
 
   /** Enumeration of the connection side of a tile */
   object Directions extends Enumeration {
@@ -48,7 +49,7 @@ package object tilessolver {
       def isJoinable = (this != C) && (_: Directi) == allowedAdjacent
 
       /** Given this Direction and the coordinate compute the coordinate of the next tile. */
-      private[tilessolver] def step(ori: (Int, Int)): (Int, Int) = {
+      private[tilessolver] def step(ori: Coord): Coord = {
         this match {
           case N => (ori._1, ori._2 - 1) // Northward
           case E => (ori._1 + 1, ori._2) // Eastward
@@ -69,7 +70,11 @@ package object tilessolver {
   case class Tile(start: Directions.Directi, end: Directions.Directi) {
     require(start != end, s"Not a proper tile definition, given $start, $end are the same.")
 
-    def whereNext(ori: (Int, Int)): (Int, Int) = end.step(ori)
+    def isEndingTile = this.end == Directions.C
+
+    def isValidAdjacent(that: Tile) = that.end.isJoinable(start)
+
+    def whereIsNextLayed(ori: Coord): Coord = end.step(ori)
   }
 
 } // package tilesolver

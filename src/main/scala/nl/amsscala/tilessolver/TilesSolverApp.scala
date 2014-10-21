@@ -4,7 +4,6 @@ package tilessolver
 import java.awt.print.Printable.{NO_SUCH_PAGE, PAGE_EXISTS}
 import java.awt.print.{PageFormat, Printable, PrinterJob}
 import java.awt.{Cursor, Graphics}
-import java.net.URL
 import javax.swing.ImageIcon
 
 import scala.swing.Swing.{VGlue, pair2Dimension}
@@ -23,7 +22,7 @@ object Model {
     TilesSolverApp.mainPanel.cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
     TilesSolverApp.lblStatusField.text = s"Computing for ${givenTiles_.size} tiles ..."
     ////////////////////////////// procesSituation /////////////////////////////
-    rawSolutions = TilesSolver.findChains(givenTiles)
+    rawSolutions = TilesSolver.findChains(givenTiles).toSet
     Control.updateMiddle()
   }
 }
@@ -47,18 +46,15 @@ trait View extends SimpleSwingApplication {
         editable = false
       })
 
-  def getImageByPartialPath(partPath: String) =
-    getImageByFullPath(partPath, resourceFromClassloader(partPath))
-
-  def getImageByFullPath(partPath: String, path: URL): ImageIcon = {
+  def getImageByPartialPath(partPath: String) : ImageIcon=
     try {
-      new ImageIcon(path)
+      new ImageIcon(resourceFromClassloader(partPath))
     } catch {
       case t: Throwable =>
         println(s"$t: $partPath not found")
         throw new ExceptionInInitializerError("Resource not found")
     }
-  }
+
 
   val mainPanel = new BoxPanel(Orientation.Horizontal) with Printable {
     contents += tileBoard
@@ -158,7 +154,7 @@ object Control {
   /** Place tiles in a grid */
   def displaySelected(solutions: Int, longestLen: Int, nAllLongestSolutions: Int, selTiles: Chain) {
 
-    def placeTilesInGrid(toDraw: Map[(Int, Int), (Tile, Int)], overlayPos: Set[(Int, Int)]): Panel = {
+    def placeTilesInGrid(toDraw: Map[Coord, (Tile, Int)], overlayPos: Set[Coord]): Panel = {
       // Compute the extremes, Most Top Left and the Most Bottom Right
       val (mostTopLeft, mostBottomRight) = TilesSolver.calculateExtremes(toDraw)
       new BoxPanel(Orientation.Vertical) {
@@ -209,17 +205,14 @@ object Control {
   def updateMiddle() {
     val solutions = TilesSolver.filterRealSolutions(Model.rawSolutions, !ViewMenu.chkNoOverlap.selected)
     val longestLen = solutions.foldLeft(0)(_ max _.size)
-    // Get the longest paths
-    val allLongestSolutions = solutions.filter(_.size >= longestLen)
 
     given.text = Model.givenTiles.mkString("\n")
 
-    ViewMenu.buildSolutionsMenu(solutions.size, longestLen, allLongestSolutions.size, allLongestSolutions)
+    ViewMenu.buildSolutionsMenu(solutions.size, longestLen, TilesSolver.allLongestSolutions(solutions))
     mainPanel.cursor = Cursor.getDefaultCursor
   }
 
-}
-
-// object Control
+}  // object Control
 
 object TilesSolverApp extends View
+

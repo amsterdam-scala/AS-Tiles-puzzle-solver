@@ -10,6 +10,7 @@ import scala.collection.parallel.immutable.ParSeq
 class TilesSolverSuite extends FunSpec with GivenWhenThen with Matchers {
 
   import nl.amsscala.tilessolver.Directions.{C, Directi, E, N, S, W}
+
   val cases = ParSeq(Nil,
     List(Tile(W, C)),
     List(Tile(C, W)),
@@ -42,9 +43,7 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen with Matchers {
         (S, (0, 1)),
         (W, (-1, 0)))
 
-      forAll(displacements) { (n: Directi, d: (Int, Int)) =>
-        Tile(C, n).whereNext(0, 0) should be(d)
-      }
+      forAll(displacements) { (n: Directi, d: Coord) => Tile(C, n).whereIsNextLayed(0, 0) should be(d)}
     }
 
     it("should result in a set with one empty chain") {
@@ -221,7 +220,6 @@ class TilesSolverSuite extends FunSpec with GivenWhenThen with Matchers {
 
     info("This is the heavy one. 10 minutes?")
     it("the exact example of the site all permutations (1.814.400)") {
-      pending
       assert(TilesSolver.fabioPhoto.permutations.forall(casus => TilesSolver.findChains(casus) ===
         Set(List(Tile(C, E), Tile(W, E), Tile(W, S), Tile(N, C)),
           List(Tile(C, E), Tile(W, S), Tile(N, C)),

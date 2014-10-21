@@ -71,16 +71,16 @@ object ViewMenu extends MenuUtils {
     }
   }
 
-  def buildSolutionsMenu(nSolution: Int, longestLen: Int, nAllLongestSolutions: Int, solutions: Set[Chain]) = {
+  def buildSolutionsMenu(nSolution: Int, longestLen: Int,  solutions: Set[Chain]) = {
     solutionsMenu.enabled = solutions.size > 1
     solutionsMenu.contents.clear()
     solutionsMenu.contents ++=
       (for (elem <- solutions.zipWithIndex.view) yield {
         menuItemFactory(t(s"Solution &${elem._2 + 1}"),
-          Control.displaySelected(nSolution, longestLen, nAllLongestSolutions, elem._1))
+          Control.displaySelected(nSolution, longestLen, solutions.size, elem._1))
       })
 
-    Control.displaySelected(nSolution, longestLen, nAllLongestSolutions, solutions.headOption.getOrElse(Nil))
+    Control.displaySelected(nSolution, longestLen, solutions.size, solutions.headOption.getOrElse(Nil))
   }
 
   def menuBar: MenuBar = new MenuBar {
