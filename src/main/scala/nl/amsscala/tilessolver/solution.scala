@@ -46,7 +46,7 @@ object Solution {
       def possibleTiles = tilesLeft.filter(path.head.isValidAdjacent).toSet
 
       possibleTiles.flatMap(tile => {
-        val extension = tile +: path
+        def extension = tile +: path
         if (tile.isStartTile) Set(extension) else evaluateChain(tilesLeft diff Seq(tile), extension)
       })
     }
