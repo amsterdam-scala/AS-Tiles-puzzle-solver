@@ -45,10 +45,10 @@ object Solution {
     def evaluateChain(tilesLeft: Chain, path: Chain): Set[Chain] = {
       def possibleTiles = tilesLeft.filter(path.head.isValidAdjacent).toSet
 
-      possibleTiles.flatMap(tile => {
+      possibleTiles.flatMap { tile =>
         def extension = tile +: path
         if (tile.isStartTile) Set(extension) else evaluateChain(tilesLeft diff Seq(tile), extension)
-      })
+      }
     }
 
     ends.flatMap(endingTile2StartWith => evaluateChain(candidates, Seq(endingTile2StartWith)))
