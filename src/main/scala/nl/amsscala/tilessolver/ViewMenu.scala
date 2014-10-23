@@ -5,19 +5,21 @@ import java.awt.Toolkit
 import java.awt.event.KeyEvent
 import javax.swing.KeyStroke
 
+import scala.language.reflectiveCalls
 import scala.swing.Swing.{EmptyIcon, HGlue}
 import scala.swing.event.Key
 import scala.swing.{AbstractButton, Action, CheckBox, Menu, MenuBar, MenuItem, Separator}
+
 
 trait MenuUtils {
 
   def t(key: String) = key // Placeholder for resource manager
 
-  protected def mutateTextNmeIcon( pComp: AbstractButton,
-                                   pActionTitleResourceText: String,
-                                   pActionBlock: => Unit = {},
-                                   pAccelerator: Option[KeyStroke] = None,
-                                   pIcon: javax.swing.Icon = EmptyIcon) {
+  protected def mutateTextNmeIcon(pComp: AbstractButton,
+                                  pActionTitleResourceText: String,
+                                  pActionBlock: => Unit = {},
+                                  pAccelerator: Option[KeyStroke] = None,
+                                  pIcon: javax.swing.Icon = EmptyIcon) {
 
     /** The mnemonic character is the first character after an ampersand character (&) in the text
       * of the MenuItem. This function will skip a mnemonic if two ampersand characters are
@@ -32,7 +34,9 @@ trait MenuUtils {
         "&[^&]".r.replaceAllIn(text, _.matched.tail)) // Item text part of pair
     }
 
-    pComp.action = Action(mnuItemText) {pActionBlock}
+    pComp.action = Action(mnuItemText) {
+      pActionBlock
+    }
 
     // Mutate component
     if (mne.hasNext) pComp.mnemonic = Key.withName(mne.next().last.toUpper.toString)
@@ -40,8 +44,7 @@ trait MenuUtils {
     pComp.action.accelerator = pAccelerator
   } // def mutateTextNmeIcon
 
-  protected def menuItemFactory(
-                                 pActionTitleResourceText: String,
+  protected def menuItemFactory( pActionTitleResourceText: String,
                                  pActionBlock: => Unit,
                                  pAccelerator: Option[KeyStroke] = None,
                                  pIcon: javax.swing.Icon = EmptyIcon): MenuItem = {
@@ -65,22 +68,24 @@ object ViewMenu extends MenuUtils {
     tooltip = t("Nothing fancy to do with this")
   }
 
-  val chkNoOverlap = new CheckBox() {
+  private val chkNoOverlap = new CheckBox() {
     action = Action(t("No overlaps")) {
-      Control.updateMiddle()
+      Control.updateCombination()
     }
   }
 
-  def buildSolutionsMenu(nSolution: Int, longestLen: Int,  solutions: Set[Chain]) = {
-    solutionsMenu.enabled = solutions.size > 1
+  def buildSolutionsMenu(nSolution: Int, solutions: Solution) = {
+    val sol = solutions.allLongestSolutions(ViewMenu.chkNoOverlap.selected)
+    val allLength = sol.headOption.map(_.size).getOrElse(0)
+    solutionsMenu.enabled = sol.size > 1
     solutionsMenu.contents.clear()
     solutionsMenu.contents ++=
-      (for (elem <- solutions.zipWithIndex.view) yield {
-        menuItemFactory(t(s"Solution &${elem._2 + 1}"),
-          Control.displaySelected(nSolution, longestLen, solutions.size, elem._1))
+      (for ((chain, numberOfChain) <- sol.zipWithIndex.view) yield {
+        menuItemFactory(t(s"Solution &${numberOfChain + 1}"),
+          Control.displaySelected(nSolution, allLength, sol.size, chain)) // Action
       })
 
-    Control.displaySelected(nSolution, longestLen, solutions.size, solutions.headOption.getOrElse(Nil))
+    Control.displaySelected(nSolution, allLength, sol.size, sol.headOption.getOrElse(Nil))
   }
 
   def menuBar: MenuBar = new MenuBar {
@@ -109,14 +114,14 @@ object ViewMenu extends MenuUtils {
       new Menu("") { // Tiles menu
         mutateTextNmeIcon(this, t("&Tiles"))
         contents.append(menuItemFactory(t("Asse&gnazione originale di Fabio"),
-          Model.changeInput(TilesSolver.fabioPhoto),
+          Model.changeInput(Suggestions.fabioPhoto),
           Some(KeyStroke.getKeyStroke(KeyEvent.VK_1, shortcutKeyMask)),
           TilesSolverApp.getImageByPartialPath("resources/px-20ticofab.png")),
-          menuItemFactory(t("&Missing tiles due to overlaps"), Model.changeInput(TilesSolver.missingsTileOverlap),
+          menuItemFactory(t("&Missing tiles due to overlaps"), Model.changeInput(Suggestions.missingsTileOverlap),
             Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))),
-          menuItemFactory(t("&Modified example"), Model.changeInput(TilesSolver.modifiedExample),
+          menuItemFactory(t("&Modified example"), Model.changeInput(Suggestions.modifiedExample),
             Some(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutKeyMask))),
-          menuItemFactory(t("C&razy example"), Model.changeInput(TilesSolver.crazyExample),
+          menuItemFactory(t("C&razy example"), Model.changeInput(Suggestions.crazyExample),
             Some(KeyStroke.getKeyStroke(KeyEvent.VK_3, shortcutKeyMask))))
       }, solutionsMenu, chkNoOverlap, HGlue,
       new Menu("") { // Window menu

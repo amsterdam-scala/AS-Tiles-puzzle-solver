@@ -6,6 +6,8 @@ version := "0.0"
 
 scalaVersion := "2.11.2"
 
+scalacOptions ++= Seq("-feature")
+
 // EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
 // EclipseKeys.withSource := true
 

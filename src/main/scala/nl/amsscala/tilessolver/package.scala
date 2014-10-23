@@ -35,7 +35,7 @@ package object tilessolver {
 
     case class Directi() extends Val {
       /** Returns allowed tile side chain-joint. */
-      private def allowedAdjacent =
+      private def counterSide =
         this match {
           case N => S
           case E => W
@@ -46,7 +46,7 @@ package object tilessolver {
       /** Test if the sides of titles pair could be adjacent.
         * The function returns true if the ending side meets a legal terminating side.
         */
-      def isJoinable = (this != C) && (_: Directi) == allowedAdjacent
+      def isJoinable = (this != C) && (_: Directi) == counterSide
 
       /** Given this Direction and the coordinate compute the coordinate of the next tile. */
       private[tilessolver] def step(ori: Coord): Coord = {
@@ -71,6 +71,8 @@ package object tilessolver {
     require(start != end, s"Not a proper tile definition, given $start, $end are the same.")
 
     def isEndingTile = this.end == Directions.C
+
+    def isStartTile = this.start== Directions.C
 
     def isValidAdjacent(that: Tile) = that.end.isJoinable(start)
 
