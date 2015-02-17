@@ -55,6 +55,8 @@ Please post any issues or ideas you have to [Tiles puzzle solver's issues](https
 
 If you like rolling up your sleeves, feel free to fork and create a feature branch.
 
-![The solver solvers @ April 17, 2014](http://photos1.meetupstatic.com/photos/event/d/d/f/6/highres_355796822.jpeg)The solver solvers @ April 17, 2014
+![The solver solvers @ April 17, 2014](https://github.com/amsterdam-scala/AS-Tiles-puzzle-solver/blob/master/artwork/SolversAtWork.jpeg?raw=true)
+
+The solver solvers @ April 17, 2014
 
 ---
