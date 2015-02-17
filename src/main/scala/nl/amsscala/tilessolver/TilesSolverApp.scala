@@ -7,7 +7,8 @@ import java.awt.{Cursor, Graphics}
 import javax.swing.ImageIcon
 
 import scala.swing.Swing.{VGlue, pair2Dimension}
-import scala.swing.{BorderPanel, BoxPanel, Button, Component, FlowPanel, GridPanel, Label, MainFrame, Orientation, Panel, ScrollPane, SimpleSwingApplication, TextArea, event}
+import scala.swing.{BorderPanel, BoxPanel, Button, Component, FlowPanel, GridPanel, Label,
+                    MainFrame, Orientation, Panel, ScrollPane, SimpleSwingApplication, TextArea, event}
 
 object Model {
 
@@ -19,7 +20,7 @@ object Model {
     givenTiles_ = tiles
     TilesSolverApp.mainPanel.cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
     TilesSolverApp.lblStatusField.text = s"Computing for ${givenTiles_.size} tiles ..."
-    ////////////////////////////// procesSituation /////////////////////////////
+    ////////////////////////////// processSituation /////////////////////////////
 
     rawSolutions = Solution(givenTiles)
     Control.updateCombination()
@@ -146,7 +147,6 @@ trait View extends SimpleSwingApplication {
 } // trait View
 
 object Control {
-
   import nl.amsscala.tilessolver.TilesSolverApp._
 
   /** Place tiles in a grid */
@@ -156,7 +156,7 @@ object Control {
       /** Compute the extremes, Lowest Bottom Left and the Most Top Right in one go */
       def calculateExtremes(toDraw: Map[Coord, (Tile, Int)]): (Coord, Coord) =
         toDraw.keys.foldLeft((toDraw.keys.head, toDraw.keys.head)) {
-          case (((xLBL, yLBL), (xMTR, yMTR)), (x, y)) => ((xLBL min x, yLBL min y), (xMTR max x, yMTR max y))
+          case (((xLBL, yLBL), (xMTR, yMTR)), (x, y)) => ((xLBL min x, `yLBL` min y), (`xMTR` max x, `yMTR` max y))
         }
 
       // Compute the extremes, Lowest Bottom Left and the Most Top Right

@@ -53,9 +53,7 @@ object Solution {
 
     ends.flatMap(endingTile2StartWith => evaluateChain(candidates, Seq(endingTile2StartWith)))
   } // findChains
-
-  def apply(solution: Set[Chain]) = new Solution(solution)
-
+  
   /** Computes the placement of tiles in a grid. Every tile has a direction, so the place after each tile is known.
     * After a tile a step is made in one of the 4 directions, this result in a increment/decrement in x or either y.
     *
