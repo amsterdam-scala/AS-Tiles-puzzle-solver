@@ -44,15 +44,17 @@ trait MenuUtils {
     pComp.action.accelerator = pAccelerator
   } // def mutateTextNmeIcon
 
-  protected def menuItemFactory( pActionTitleResourceText: String,
-                                 pActionBlock: => Unit,
-                                 pAccelerator: Option[KeyStroke] = None,
-                                 pIcon: javax.swing.Icon = EmptyIcon): MenuItem = {
+  protected def menuItemFactory(pActionTitleResourceText: String,
+                                pActionBlock: => Unit,
+                                pAccelerator: Option[KeyStroke] = None,
+                                pIcon: javax.swing.Icon = EmptyIcon): MenuItem = {
     new MenuItem("") {
       mutateTextNmeIcon(this, pActionTitleResourceText, pActionBlock, pAccelerator, pIcon)
     }
   }
-} // trait MenuUtils
+}
+
+// trait MenuUtils
 
 object ViewMenu extends MenuUtils {
   private final val shortcutKeyMask = Toolkit.getDefaultToolkit.getMenuShortcutKeyMask
@@ -74,22 +76,23 @@ object ViewMenu extends MenuUtils {
     }
   }
 
-  def buildSolutionsMenu(nSolution: Int, solutions: Solution) = {
+  def buildSolutionsMenu(solutions: Solution) {
+    val nSolutions = solutions.rawSolution.size /*Total number of all solutions small and long*/
     val sol = solutions.allLongestSolutions(ViewMenu.chkNoOverlap.selected)
     val allLength = sol.headOption.map(_.size).getOrElse(0)
     solutionsMenu.enabled = sol.size > 1
     solutionsMenu.contents.clear()
-    solutionsMenu.contents ++=
-      (for ((chain, numberOfChain) <- sol.zipWithIndex.view) yield {
-        menuItemFactory(t(s"Solution &${numberOfChain + 1}"),
-          Control.displaySelected(nSolution, allLength, sol.size, chain)) // Action
-      })
+    solutionsMenu.contents ++= (for ((chain, numberOfChain) <- sol.zipWithIndex.view) yield {
+      menuItemFactory(t(s"Solution &${numberOfChain + 1}"),
+        Control.displaySelected(nSolutions, allLength, sol.size, chain)) // Action
+    })
 
-    Control.displaySelected(nSolution, allLength, sol.size, sol.headOption.getOrElse(Nil))
+    Control.displaySelected(nSolutions, allLength, sol.size, sol.headOption.getOrElse(Nil))
   }
 
   def menuBar: MenuBar = new MenuBar {
-    contents.append(new Menu("") { // File menu
+    contents.append(new Menu("") {
+      // File menu
       mutateTextNmeIcon(this, t("&File"))
       tooltip = "File Tooltip text"
 
@@ -104,14 +107,17 @@ object ViewMenu extends MenuUtils {
         menuItemFactory(
           s"${t("E&xit")} ${TilesSolverApp.applicationShort}", sys.exit(), None,
           TilesSolverApp.getImageByPartialPath("/resources/px-16gnome_application_exit.png")))
-    }, new Menu("") { // Edit menu
+    }, new Menu("") {
+      // Edit menu
       mutateTextNmeIcon(this, t("&Edit"))
       enabled = false
-    }, new Menu("") { // View menu
+    }, new Menu("") {
+      // View menu
       mutateTextNmeIcon(this, t("&View"))
       contents.append(chkSorted)
     },
-      new Menu("") { // Tiles menu
+      new Menu("") {
+        // Tiles menu
         mutateTextNmeIcon(this, t("&Tiles"))
         contents.append(menuItemFactory(t("Asse&gnazione originale di Fabio"),
           Model.changeInput(Suggestions.fabioPhoto),
@@ -124,11 +130,13 @@ object ViewMenu extends MenuUtils {
           menuItemFactory(t("C&razy example"), Model.changeInput(Suggestions.crazyExample),
             Some(KeyStroke.getKeyStroke(KeyEvent.VK_3, shortcutKeyMask))))
       }, solutionsMenu, chkNoOverlap, HGlue,
-      new Menu("") { // Window menu
+      new Menu("") {
+        // Window menu
         mutateTextNmeIcon(this, t("&Window"))
         enabled = false
       },
-      new Menu("") { // Help Menu
+      new Menu("") {
+        // Help Menu
         mutateTextNmeIcon(this, t("&Help"))
         contents.append(menuItemFactory(
           t("Show &help"), new ViewHelp, Some(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0))),
@@ -136,4 +144,6 @@ object ViewMenu extends MenuUtils {
       })
   } // def menuBar
 
-} // object ViewMenu
+}
+
+// object ViewMenu
