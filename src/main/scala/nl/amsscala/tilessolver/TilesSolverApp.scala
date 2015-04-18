@@ -12,11 +12,11 @@ import scala.swing.{BorderPanel, BoxPanel, Button, Component, FlowPanel, GridPan
 
 object Model {
 
-  var rawSolutions: Solution = Solution(Nil)
+  protected[tilessolver] var rawSolutions: Solution = Solution(Nil)
 
   private var givenTiles_ : Chain = Nil
 
-  def changeInput(tiles: Chain) {
+  protected[tilessolver] def changeInput(tiles: Chain) {
     givenTiles_ = tiles
     TilesSolverApp.mainPanel.cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
     TilesSolverApp.lblStatusField.text = s"Computing for ${givenTiles_.size} tiles ..."
@@ -208,8 +208,7 @@ object Control {
 
     given.text = Model.givenTiles.mkString("\n")
 
-    ViewMenu.buildSolutionsMenu(Model.rawSolutions.rawSolution.size /*Total number of all solutions small and long*/ ,
-      Model.rawSolutions)
+    ViewMenu.buildSolutionsMenu(Model.rawSolutions)
 
     mainPanel.cursor = Cursor.getDefaultCursor
   }
